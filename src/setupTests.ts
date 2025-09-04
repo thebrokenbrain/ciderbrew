@@ -1,12 +1,16 @@
 import '@testing-library/jest-dom';
 
-// Mock URL object for JSDOM
-global.URL = global.URL || {
-  createObjectURL: jest.fn(() => 'blob:mock-url'),
-  revokeObjectURL: jest.fn(),
-};
+// Mock URL methods for JSDOM environment
+Object.defineProperty(global, 'URL', {
+  value: {
+    ...global.URL,
+    createObjectURL: jest.fn(() => 'blob:mock-url'),
+    revokeObjectURL: jest.fn(),
+  },
+  writable: true,
+});
 
-// Mock document.execCommand
+// Mock document.execCommand for clipboard fallback
 Object.defineProperty(document, 'execCommand', {
   value: jest.fn(() => true),
   writable: true,
