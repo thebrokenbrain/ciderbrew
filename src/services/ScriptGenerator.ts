@@ -135,7 +135,7 @@ show_progress "Instalando aplicaciones..."`;
     apps.forEach(app => {
       script += `
 echo "  → Instalando ${app.name}..."
-brew install --cask ${app.command}`;
+${ScriptGenerator.getInstallCommand(app)}`;
     });
 
     script += `
