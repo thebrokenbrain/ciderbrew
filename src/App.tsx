@@ -26,6 +26,9 @@ function App() {
             onDeselectAll={() => appSelection.deselectAllInCategory(appSelection.activeCategory)}
             selectedCount={appSelection.selectedCount}
             totalApps={totalApps}
+            onGenerateScript={appSelection.showScriptGenerator}
+            hasSelections={appSelection.hasSelections}
+            showScriptSection={appSelection.showScriptSection}
           />
           
           <div className="p-8">
@@ -35,36 +38,6 @@ function App() {
               onToggleApp={appSelection.toggleApp}
             />
           </div>
-
-          {/* Generate Script Button - Only show when no script section is displayed */}
-          {!appSelection.showScriptSection && (
-            <div className="p-8 pt-0 border-t border-gray-200">
-              <div className="text-center">
-                <button
-                  onClick={appSelection.showScriptGenerator}
-                  disabled={!appSelection.hasSelections}
-                  className={`
-                    inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300
-                    ${appSelection.hasSelections
-                      ? 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-lg hover:-translate-y-0.5'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }
-                  `}
-                >
-                  <i className="fa fa-magic text-xl"></i>
-                  {appSelection.hasSelections 
-                    ? `Generar Script (${appSelection.selectedCount} apps)` 
-                    : 'Selecciona aplicaciones primero'
-                  }
-                </button>
-                {appSelection.hasSelections && (
-                  <p className="mt-3 text-sm text-gray-600">
-                    Se generará un script personalizado con las aplicaciones seleccionadas
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Script Section - Only show when user clicks generate */}
           {appSelection.showScriptSection && (

@@ -8,6 +8,9 @@ interface TabNavigationProps {
   onDeselectAll: () => void;
   selectedCount: number;
   totalApps: number;
+  onGenerateScript?: () => void;
+  hasSelections?: boolean;
+  showScriptSection?: boolean;
 }
 
 export const TabNavigation = ({ 
@@ -16,7 +19,10 @@ export const TabNavigation = ({
   onSelectAll,
   onDeselectAll,
   selectedCount,
-  totalApps
+  totalApps,
+  onGenerateScript,
+  hasSelections = false,
+  showScriptSection = false
 }: TabNavigationProps) => {
   const categories = Object.entries(appConfig.categories) as [AppCategory, typeof appConfig.categories[AppCategory]][];
 
@@ -52,6 +58,23 @@ export const TabNavigation = ({
         </nav>
         
         <div className="flex gap-2 mt-4 lg:mt-0">
+          {!showScriptSection && onGenerateScript && (
+            <button
+              onClick={onGenerateScript}
+              disabled={!hasSelections}
+              className={`
+                px-6 py-2 rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2
+                ${hasSelections
+                  ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }
+              `}
+            >
+              <i className="fa fa-magic"></i>
+              Generar Script
+            </button>
+          )}
+          
           <button
             onClick={onSelectAll}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm font-medium flex items-center gap-2"
