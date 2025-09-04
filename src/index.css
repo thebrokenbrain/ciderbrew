@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+  
+  body {
+    @apply font-sans text-gray-900 antialiased;
+    font-feature-settings: 'cv03', 'cv04', 'cv11';
+  }
+}
