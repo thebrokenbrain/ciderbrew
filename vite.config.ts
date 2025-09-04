@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/macos_setup_2/',
+  base: '/macos-setup-assistant/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

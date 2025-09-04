@@ -33,7 +33,7 @@ Una aplicación web moderna e intuitiva construida con **React**, **TypeScript**
 
 ## 🚀 Cómo Usar
 
-1. **🌐 [Abre la aplicación online](https://josemi.github.io/macos_setup_2/)**
+1. **🌐 [Abre la aplicación online](https://thebrokenbrain.github.io/macos-setup-assistant/)**
 2. **📱 Navega** por las pestañas de categorías
 3. **✅ Selecciona** las aplicaciones que deseas instalar
 4. **🎯 Genera** el script con el botón "Generar Script"
