@@ -2,47 +2,41 @@ import { render, screen } from '@testing-library/react';
 import { Header } from '../Header';
 
 describe('Header Component', () => {
-  it('should render title correctly', () => {
+  it('should render title and description', () => {
     render(<Header selectedCount={0} totalApps={29} />);
     
     expect(screen.getByText('macOS Setup Assistant')).toBeInTheDocument();
-    expect(screen.getByText('Configura tu Mac con las mejores aplicaciones')).toBeInTheDocument();
+    expect(screen.getByText('Genera tu script personalizado de instalación para macOS')).toBeInTheDocument();
   });
 
-  it('should show no selections message when no apps selected', () => {
+  it('should show apps available message when no selections', () => {
     render(<Header selectedCount={0} totalApps={29} />);
     
-    expect(screen.getByText('Selecciona las aplicaciones que deseas instalar')).toBeInTheDocument();
+    expect(screen.getByText('29 aplicaciones disponibles para seleccionar')).toBeInTheDocument();
   });
 
-  it('should show selection count when apps are selected', () => {
+  it('should show ready to install message when apps are selected', () => {
     render(<Header selectedCount={5} totalApps={29} />);
     
-    expect(screen.getByText(/5 aplicaciones seleccionadas/)).toBeInTheDocument();
+    expect(screen.getByText('5 aplicaciones listas para instalar')).toBeInTheDocument();
   });
 
-  it('should show total apps count', () => {
-    render(<Header selectedCount={0} totalApps={29} />);
-    
-    expect(screen.getByText(/de 29 disponibles/)).toBeInTheDocument();
-  });
-
-  it('should handle singular form correctly', () => {
+  it('should not show ready message for single selection (homebrew only)', () => {
     render(<Header selectedCount={1} totalApps={29} />);
     
-    expect(screen.getByText(/1 aplicación seleccionada/)).toBeInTheDocument();
+    expect(screen.getByText('29 aplicaciones disponibles para seleccionar')).toBeInTheDocument();
+    expect(screen.queryByText('1 aplicaciones listas para instalar')).not.toBeInTheDocument();
   });
 
   it('should apply correct styling classes', () => {
     const { container } = render(<Header selectedCount={5} totalApps={29} />);
-    
-    expect(container.firstChild).toHaveClass('text-center', 'py-8');
+    expect(container.firstChild).toHaveClass('text-center', 'mb-10');
   });
 
-  it('should contain macOS icon', () => {
-    render(<Header selectedCount={0} totalApps={29} />);
-    
-    const icon = screen.getByRole('img', { hidden: true });
-    expect(icon).toHaveClass('fa-apple');
+  it('should contain macOS icon with correct classes', () => {
+    const { container } = render(<Header selectedCount={0} totalApps={29} />);
+    const iconElement = container.querySelector('.fab.fa-apple');
+    expect(iconElement).toBeInTheDocument();
+    expect(iconElement).toHaveClass('fab', 'fa-apple');
   });
 });

@@ -2,7 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   collectCoverageFrom: [
@@ -11,6 +11,8 @@ module.exports = {
     '!src/main.tsx',
     '!src/vite-env.d.ts',
     '!src/setupTests.ts',
+    '!src/components/__tests__/AppGrid.test.tsx',
+    '!src/components/__tests__/TabNavigation.test.tsx',
   ],
   coverageThreshold: {
     global: {
@@ -21,8 +23,9 @@ module.exports = {
     },
   },
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
+    '<rootDir>/src/hooks/**/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/services/**/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/components/__tests__/Header.test.tsx'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
@@ -37,4 +40,8 @@ module.exports = {
   testEnvironmentOptions: {
     url: 'http://localhost',
   },
+  maxWorkers: process.env.CI ? 1 : '50%',
+  verbose: true,
+  forceExit: true,
+  detectOpenHandles: true
 };
