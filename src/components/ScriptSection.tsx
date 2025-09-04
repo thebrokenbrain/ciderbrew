@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { App } from '../types';
 import { ScriptGenerator } from '../services/ScriptGenerator';
 
@@ -8,6 +8,7 @@ interface ScriptSectionProps {
   selectedCount: number;
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   onHideScript: () => void;
+  autoGenerate?: boolean;
 }
 
 export const ScriptSection = ({ 
@@ -15,10 +16,18 @@ export const ScriptSection = ({
   hasSelections, 
   selectedCount, 
   onShowToast,
-  onHideScript
+  onHideScript,
+  autoGenerate = false
 }: ScriptSectionProps) => {
   const [generatedScript, setGeneratedScript] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Auto-generate script when component mounts if autoGenerate is true
+  useEffect(() => {
+    if (autoGenerate && hasSelections && !generatedScript) {
+      generateScript();
+    }
+  }, [autoGenerate, hasSelections]);
 
   const generateScript = async () => {
     if (!hasSelections) {
@@ -136,8 +145,8 @@ export const ScriptSection = ({
             </>
           ) : (
             <>
-              <i className="fa fa-magic"></i>
-              Generar Script
+              <i className="fa fa-refresh"></i>
+              {generatedScript ? 'Regenerar Script' : 'Generar Script'}
             </>
           )}
         </button>

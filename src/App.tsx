@@ -47,6 +47,7 @@ function App() {
               selectedCount={appSelection.selectedCount}
               onShowToast={appSelection.addToast}
               onHideScript={appSelection.hideScriptGenerator}
+              autoGenerate={true}
             />
           )}
         </main>

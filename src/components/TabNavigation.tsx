@@ -28,7 +28,7 @@ export const TabNavigation = ({
 
   return (
     <div className="bg-gray-50 border-b border-gray-200">
-      <div className="flex flex-wrap justify-between items-center px-8 py-4">
+      <div className="flex flex-wrap justify-between items-center px-8 py-6">
         {/* Counter Badge */}
         <div className="flex items-center gap-4 mb-4 lg:mb-0">
           <div className="bg-primary-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
@@ -37,7 +37,7 @@ export const TabNavigation = ({
           </div>
         </div>
 
-        <nav className="flex flex-wrap gap-2">
+        <nav className="flex flex-wrap gap-3 mb-4 lg:mb-0">
           {categories.map(([key, category]) => (
             <button
               key={key}
@@ -57,22 +57,27 @@ export const TabNavigation = ({
           ))}
         </nav>
         
-        <div className="flex gap-2 mt-4 lg:mt-0">
+        <div className="flex flex-wrap gap-3 mt-4 lg:mt-0">
           {!showScriptSection && onGenerateScript && (
-            <button
-              onClick={onGenerateScript}
-              disabled={!hasSelections}
-              className={`
-                px-6 py-2 rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2
-                ${hasSelections
-                  ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }
-              `}
-            >
-              <i className="fa fa-magic"></i>
-              Generar Script
-            </button>
+            <>
+              <button
+                onClick={onGenerateScript}
+                disabled={!hasSelections}
+                className={`
+                  px-6 py-2 rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2
+                  ${hasSelections
+                    ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }
+                `}
+              >
+                <i className="fa fa-magic"></i>
+                Generar Script
+              </button>
+              
+              {/* Separator */}
+              <div className="w-px bg-gray-300 mx-2"></div>
+            </>
           )}
           
           <button
