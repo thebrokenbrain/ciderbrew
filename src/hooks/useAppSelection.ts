@@ -9,6 +9,7 @@ export const useAppSelection = () => {
   
   const [activeCategory, setActiveCategory] = useState<AppCategory>('desarrollo');
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [showScriptSection, setShowScriptSection] = useState<boolean>(false);
 
   const toggleApp = useCallback((appId: string, isSelected: boolean) => {
     setSelectedApps(prev => {
@@ -89,6 +90,14 @@ export const useAppSelection = () => {
   const selectedCount = selectedApps.size;
   const hasSelections = selectedCount > 1; // More than just homebrew
 
+  const showScriptGenerator = useCallback(() => {
+    setShowScriptSection(true);
+  }, []);
+
+  const hideScriptGenerator = useCallback(() => {
+    setShowScriptSection(false);
+  }, []);
+
   return {
     selectedApps,
     selectedAppsList,
@@ -103,6 +112,9 @@ export const useAppSelection = () => {
     clearAllSelections,
     toasts,
     addToast,
-    removeToast
+    removeToast,
+    showScriptSection,
+    showScriptGenerator,
+    hideScriptGenerator
   };
 };

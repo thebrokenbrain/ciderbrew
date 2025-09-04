@@ -7,13 +7,15 @@ interface ScriptSectionProps {
   hasSelections: boolean;
   selectedCount: number;
   onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
+  onHideScript: () => void;
 }
 
 export const ScriptSection = ({ 
   selectedApps, 
   hasSelections, 
   selectedCount, 
-  onShowToast 
+  onShowToast,
+  onHideScript
 }: ScriptSectionProps) => {
   const [generatedScript, setGeneratedScript] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -108,6 +110,14 @@ export const ScriptSection = ({
 
       {/* Controls */}
       <div className="flex flex-wrap gap-4 mb-6">
+        <button
+          onClick={onHideScript}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gray-500 text-white hover:bg-gray-600 hover:shadow-lg hover:-translate-y-0.5"
+        >
+          <i className="fa fa-arrow-left"></i>
+          Volver a Selección
+        </button>
+
         <button
           onClick={generateScript}
           disabled={!hasSelections || isGenerating}
