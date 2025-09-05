@@ -1,299 +1,300 @@
 # 🍎 macOS Setup Assistant
 
-Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tailwind CSS** para generar scripts personalizados de instalación de aplicaciones en macOS.
+Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tailwind CSS** que genera scripts personalizados de instalación para macOS con búsqueda híbrida avanzada y detección automática de arquitectura.
 
 ![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.1-646CFF?logo=vite&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-46%20passing-green?logo=jest)
-![Mobile Responsive](https://img.shields.io/badge/Mobile-Responsive-green?logo=mobile)
+![Tests](https://img.shields.io/badge/Tests-52%20passing-green?logo=jest)
+![Architecture](https://img.shields.io/badge/Architecture-ARM64%20%7C%20Intel-blue?logo=apple)
 
 ## 🌟 Demo en Vivo
 
 **🔗 [Ver Aplicación Online](https://thebrokenbrain.github.io/macos-setup-assistant/)**
 
-## ✨ ¿Qué hace la aplicación?
+## ✨ Características Principales
 
-macOS Setup Assistant es una herramienta web que simplifica la configuración inicial de un Mac nuevo. Te permite:
+### 🔍 **Búsqueda Híbrida Avanzada**
+- **Búsqueda local instantánea** en 30+ aplicaciones populares curadas
+- **Integración con Homebrew API** para acceso a 6000+ paquetes
+- **Fallback inteligente** con sistema de caché optimizado
+- **Debouncing y paginación** para mejor rendimiento
 
-- **📱 Seleccionar visualmente** las aplicaciones que necesitas de un catálogo de 29+ apps
-- **🎯 Generar automáticamente** un script bash optimizado y personalizado
-- **📥 Descargar o copiar** el script para ejecutarlo en Terminal
-- **⚡ Automatizar** la instalación de todas tus aplicaciones favoritas con un solo comando
-- **📱 Usar desde cualquier dispositivo** - Completamente responsive y optimizado para móviles
+### 🏗️ **Detección Automática de Arquitectura**
+- **Compatibilidad ARM64/Intel** mostrada visualmente con badges
+- **Base de datos de 60+ aplicaciones** con soporte conocido
+- **Heurísticas inteligentes** para apps desconocidas
+- **Detección automática** para herramientas CLI y GUI
 
-### Flujo de uso:
-1. Navega por las **5 categorías** de aplicaciones (Desarrollo, Productividad, Multimedia, Utilidades, Configuración)
-2. **Selecciona** las aplicaciones que deseas instalar
-3. Haz clic en **"Generar Script"** 
-4. **Descarga** el archivo `macos-setup.sh` generado
-5. **Ejecuta** en Terminal: `chmod +x macos-setup.sh && ./macos-setup.sh`
+### 🎨 **Diseño Personalizado y Responsivo**
+- **Tema marrón/ámbar personalizado** con iconografía propia
+- **Icono y favicon personalizados** para branding único
+- **Completamente responsivo** - optimizado para móviles y tablets
+- **Navegación suave** con scroll automático a secciones
 
-## 🏗️ Arquitectura de la Aplicación
+### ⚡ **Generación Inteligente de Scripts**
+- **Scripts bash optimizados** con manejo de errores
+- **Opciones configurables** (actualizaciones, cleanup, verboso)
+- **Descarga directa** o copia al portapapeles
+- **Validación de dependencias** y orden de instalación
 
-### � Responsive Design
-La aplicación está **completamente optimizada para móviles** con:
-- **Layouts adaptativos** que se reorganizan según el tamaño de pantalla
-- **Grid responsivo** de 2x2 en móvil para categorías de apps
-- **Botones touch-friendly** con área mínima de 44px
-- **Textos escalables** que se adaptan desde móvil hasta desktop
-- **Navegación intuitiva** optimizada para uso táctil
+## 🚀 ¿Cómo funciona?
 
-### �📋 Stack Tecnológico
-- **React 19.1** - Biblioteca de interfaz de usuario con Concurrent Features
-- **TypeScript 5.0** - Tipado estático para JavaScript
-- **Vite 7.1** - Build tool moderno y ultrarrápido
-- **Tailwind CSS 3.4** - Framework de CSS utilitario
-- **Jest 30.1** - Framework de testing con React Testing Library
-- **Font Awesome** - Iconografía completa
+1. **🔍 Busca** aplicaciones usando la barra de búsqueda híbrida
+2. **📱 Selecciona** las apps que necesitas con badges de arquitectura
+3. **⚙️ Configura** opciones de instalación (actualizaciones, verboso, etc.)
+4. **📄 Genera** tu script personalizado con un clic
+5. **💾 Descarga** o copia el script y ejecútalo en Terminal
 
-### 📁 Estructura del Proyecto
+### Ejemplo de uso:
+```bash
+# Buscar "chrome" muestra instantáneamente Google Chrome (local)
+# Buscar "mongodb" consulta Homebrew API automáticamente
+# Seleccionar apps muestra badges ARM64/Intel
+# Generar script incluye todas las dependencias en orden correcto
+```
+
+## 🏗️ Arquitectura Técnica
+
+### � **Stack Tecnológico**
+- **React 19.1** - UI library con Concurrent Features
+- **TypeScript 5.0** - Tipado estático end-to-end
+- **Vite 7.1** - Build tool ultrarrápido con HMR
+- **Tailwind CSS 3.4** - Utility-first CSS framework
+- **Jest 30.1** - Testing framework con React Testing Library
+
+### �️ **Estructura del Proyecto**
 
 ```
 src/
-├── components/              # Componentes React reutilizables
-│   ├── Header.tsx          # Cabecera con contador de apps
-│   ├── TabNavigation.tsx   # Navegación de categorías + botones de acción
-│   ├── AppGrid.tsx         # Grid de aplicaciones seleccionables
-│   ├── ScriptSection.tsx   # Generación y preview del script
-│   └── ToastContainer.tsx  # Sistema de notificaciones
-├── hooks/                  # Custom hooks
-│   └── useAppSelection.ts  # Gestión completa del estado de selección
-├── services/               # Lógica de negocio
-│   └── ScriptGenerator.ts  # Generación de scripts bash
-├── data/                   # Configuración y datos
-│   └── apps.ts            # Catálogo de aplicaciones y categorías
-├── types/                  # Definiciones TypeScript
-│   └── index.ts           # Tipos de la aplicación
-├── __tests__/             # Tests unitarios
-│   ├── hooks/             # Tests de hooks
-│   ├── services/          # Tests de servicios
-│   └── components/        # Tests de componentes
-├── App.tsx                # Componente principal con routing condicional
-├── main.tsx               # Punto de entrada de React
-└── index.css              # Configuración de Tailwind CSS
+├── components/                 # Componentes React modernos
+│   ├── Header.tsx             # Cabecera con icono personalizado
+│   ├── SearchInterface.tsx    # Interfaz de búsqueda híbrida
+│   ├── AppCard.tsx           # Cards con badges de arquitectura
+│   ├── ScriptSection.tsx     # Generación y descarga de scripts
+│   └── ToastContainer.tsx    # Sistema de notificaciones
+├── services/                  # Capa de servicios especializados
+│   ├── HybridSearchService.ts       # Búsqueda local + API
+│   ├── ArchitectureDetectionService.ts # Detección ARM64/Intel
+│   ├── LocalSearchService.ts        # Búsqueda local optimizada
+│   ├── BrewApiService.ts            # Cliente Homebrew API
+│   └── ScriptGenerator.ts           # Generación de scripts
+├── hooks/                     # Custom hooks optimizados
+│   ├── useAppSelection.ts     # Gestión estado de selección
+│   └── useDebounce.ts        # Debouncing para búsqueda
+├── types/                     # Sistema de tipos unificado
+│   └── api.ts                # Tipos SearchableApp y más
+└── __tests__/                # Suite de tests completa (52 tests)
+    ├── components/           # Tests de componentes
+    └── services/            # Tests de servicios y lógica
 ```
 
-### 🔧 Arquitectura de Componentes
+### 🔧 **Servicios Clave**
 
-#### `useAppSelection` Hook
-Gestiona todo el estado de la aplicación:
-- Selección/deselección de aplicaciones
-- Filtrado por categorías
-- Sistema de toasts/notificaciones
-- Control de visualización del generador de scripts
+#### `HybridSearchService`
+Sistema de búsqueda inteligente que:
+- Busca primero en cache local (instantáneo)
+- Fallback a Homebrew API si no hay suficientes resultados
+- Enriquece resultados con información de arquitectura
+- Maneja errores gracefully con indicadores visuales
 
-#### `ScriptGenerator` Service
-Clase estática que maneja:
-- Generación de scripts bash optimizados
-- Instalación de Homebrew
-- Agrupación inteligente de comandos
-- Descarga de archivos y copia al portapapeles
+#### `ArchitectureDetectionService`
+Detecta compatibilidad de arquitectura:
+- Base de datos curada de 60+ aplicaciones populares
+- Heurísticas para CLI tools (universal por defecto)
+- Detección de apps legacy/especializadas (Intel only)
+- Badges visuales ARM64/Intel en la interfaz
 
-#### Componentes Modulares
-- **Header**: Feedback visual del estado de selección
-- **TabNavigation**: Navegación + acciones principales
-- **AppGrid**: Visualización interactiva de aplicaciones
-- **ScriptSection**: Generación automática y preview del script
+#### `ScriptGenerator`
+Genera scripts bash optimizados:
+- Agrupación inteligente de comandos brew/cask
+- Opciones configurables (updates, cleanup, verbose)
+- Manejo de errores y validaciones
+- Descarga directa y copia al portapapeles
 
-## 🚀 Cómo compilar
+## �️ Desarrollo Local
 
 ### Prerrequisitos
 ```bash
-# Node.js 18 o superior
-node --version  # Debe ser >= 18.0.0
+# Node.js 18+
+node --version  # >= 18.0.0
 
 # npm o yarn
 npm --version
 ```
 
-### Instalación
+### Instalación y Ejecución
 ```bash
-# Clonar el repositorio
+# Clonar repositorio
 git clone https://github.com/thebrokenbrain/macos-setup-assistant.git
 cd macos-setup-assistant
 
 # Instalar dependencias
 npm install
 
-# Compilar para producción
+# Desarrollo con hot reload
+npm run dev
+# → http://localhost:5173
+
+# Build para producción
 npm run build
 
-# El resultado estará en la carpeta 'dist/'
+# Preview del build
+npm run preview
 ```
 
-## 🖥️ Cómo levantar la aplicación en local
+### Scripts Disponibles
+- `npm run dev` - Servidor desarrollo con HMR
+- `npm run build` - Build optimizado para producción  
+- `npm run preview` - Preview del build
+- `npm run lint` - Análisis de código ESLint
+- `npm test` - Ejecutar suite de tests
 
-```bash
-# Modo desarrollo (con hot reload)
-npm run dev
+## 🧪 Testing
 
-# La aplicación estará disponible en:
-# http://localhost:5173/macos-setup-assistant/
-# 
-# 📱 Prueba la versión móvil usando DevTools:
-# Chrome/Safari: F12 → Toggle Device Toolbar
-# Responsive design funciona en todas las resoluciones
-
-# Preview del build de producción
-npm run build && npm run preview
-```
-
-### Scripts disponibles:
-- `npm run dev` - Servidor de desarrollo
-- `npm run build` - Build optimizado para producción
-- `npm run preview` - Preview del build de producción
-- `npm run lint` - Análisis de código con ESLint
-
-## 🧪 Cómo ejecutar los tests
+### Estado Actual
+- ✅ **52 tests pasando** en 7 test suites
+- ✅ **Cobertura completa** de servicios críticos
+- ✅ **Tests de integración** para búsqueda híbrida
+- ✅ **Tests de arquitectura** para detección ARM64/Intel
+- ✅ **CI/CD** con GitHub Actions
 
 ```bash
 # Ejecutar todos los tests
 npm test
 
-# Ejecutar tests en modo watch (desarrollo)
+# Tests en modo watch
 npm run test:watch
 
-# Ejecutar tests con coverage
+# Tests con coverage report
 npm run test:coverage
-
-# Ejecutar tests para CI (usado en GitHub Actions)
-npm run test:ci
 ```
 
-### Estado actual de tests:
-- ✅ **46 tests pasando**
-- ✅ **5 test suites** (hooks, services, components)
-- ✅ **53% cobertura** de código
-- ✅ **Integración continua** con GitHub Actions
+### Suites de Test Incluidas
+- **HybridSearchService**: Búsqueda local + API + fallbacks
+- **ArchitectureDetectionService**: Detección ARM64/Intel  
+- **ScriptGenerator**: Generación y opciones de scripts
+- **Components**: Header, AppCard con arquitectura
+- **Integration**: Tests end-to-end de flujos completos
 
-### Tests incluidos:
-- **useAppSelection Hook**: 12 tests de gestión de estado
-- **ScriptGenerator Service**: 22 tests de generación de scripts
-- **Header Component**: 6 tests de renderizado y lógica
-- **Hooks básicos**: 4 tests adicionales
+## 🎨 Personalización
 
-## 📦 Gestión de Aplicaciones y Configuraciones
-
-### ➕ Añadir una nueva aplicación
-
-Edita el archivo `src/data/apps.ts` y añade un nuevo objeto al array `apps`:
+### Añadir Nueva Aplicación Local
+Edita `src/services/LocalSearchService.ts`:
 
 ```typescript
 {
-  id: 'mi-nueva-app',                    // ID único
-  name: 'Mi Nueva Aplicación',           // Nombre visible
-  description: 'Descripción detallada',  // Descripción que se muestra
-  icon: 'fa-rocket',                     // Icono de Font Awesome
-  category: 'desarrollo',                // Categoría existente
-  installType: 'brew-cask',             // Tipo de instalación
-  command: 'mi-nueva-app',               // Comando para Homebrew
-  isRequired: false                      // Si es obligatoria o no
-}
-```
-
-#### Tipos de instalación disponibles:
-- `'brew'` - Paquetes de línea de comandos: `brew install comando`
-- `'brew-cask'` - Aplicaciones GUI: `brew install --cask comando`
-- `'mas'` - Mac App Store: `mas install app-id`
-- `'curl-script'` - Scripts descargables: `curl -s url | sh`
-- `'xcode-select'` - Herramientas de Xcode: `xcode-select --install`
-
-### ➕ Añadir una nueva categoría
-
-1. **Actualiza los tipos** en `src/types/index.ts`:
-```typescript
-export type AppCategory = 
-  | 'desarrollo' 
-  | 'productividad' 
-  | 'multimedia' 
-  | 'utilidades' 
-  | 'configuracion'
-  | 'mi-nueva-categoria';  // ← Añadir aquí
-```
-
-2. **Añade la configuración** en `src/data/apps.ts`:
-```typescript
-export const appConfig = {
-  categories: {
-    // ... otras categorías
-    'mi-nueva-categoria': {
-      name: 'Mi Nueva Categoría',
-      icon: 'fa-star',        // Icono de Font Awesome
-      description: 'Descripción de la categoría'
-    }
-  }
-  // ...
-}
-```
-
-3. **Añade aplicaciones** con `category: 'mi-nueva-categoria'`
-
-### ❌ Eliminar una aplicación
-
-1. Busca la app en `src/data/apps.ts` por su `id`
-2. Elimina el objeto completo del array
-3. La aplicación desaparecerá automáticamente de la interfaz
-
-### 🔧 Ejemplo práctico: Añadir Figma
-
-```typescript
-{
-  id: 'figma',
-  name: 'Figma',
-  description: 'Herramienta de diseño colaborativo en la nube',
-  icon: 'fa-pencil-ruler',
-  category: 'productividad',
+  id: 'mi-app',
+  name: 'Mi Aplicación',
+  description: 'Descripción detallada',
+  homepage: 'https://mi-app.com',
+  version: 'latest',
   installType: 'brew-cask',
-  command: 'figma'
+  command: 'brew install --cask mi-app',
+  category: 'Development',
+  source: 'predefined'
 }
 ```
 
-### 🎨 Personalizar estilos
+### Configurar Detección de Arquitectura
+Actualiza `src/services/ArchitectureDetectionService.ts`:
 
-Los estilos usan **Tailwind CSS**. Para personalizar:
+```typescript
+// Para apps con soporte conocido
+private static readonly KNOWN_ARCHITECTURE_SUPPORT = {
+  'mi-app': { arm64: true, intel: true },
+  'app-legacy': { arm64: false, intel: true }
+};
+```
 
-1. **Colores principales** se definen en `tailwind.config.js`
-2. **Estilos globales** en `src/index.css`
-3. **Componentes** usan clases de Tailwind inline
+### Personalizar Tema Visual
+Los colores se configuran en `tailwind.config.js`:
+
+```javascript
+colors: {
+  primary: {
+    50: '#f4f1e8',   // Marrón muy claro
+    // ... escala completa
+    900: '#2c190a'   // Marrón muy oscuro
+  }
+}
+```
 
 ## 🚀 Despliegue
 
-La aplicación se despliega automáticamente en **GitHub Pages** mediante **GitHub Actions**:
+### GitHub Pages (Automático)
+La aplicación se despliega automáticamente a GitHub Pages:
 
-1. **Push a main** → Se ejecutan los tests automáticamente
-2. **Tests pasan** → Se construye la aplicación
-3. **Build exitoso** → Se despliega a GitHub Pages
+1. **Push a main** → Tests automáticos en CI
+2. **Tests pasan** → Build de producción  
+3. **Deploy automático** → Disponible en GitHub Pages
 
-### URL de producción:
-- 🌐 **https://thebrokenbrain.github.io/macos-setup-assistant/**
+**URL de producción:** https://thebrokenbrain.github.io/macos-setup-assistant/
+
+### Despliegue Manual
+```bash
+# Build para producción
+npm run build
+
+# Los archivos estarán en dist/
+# Sube dist/ a tu hosting preferido
+```
 
 ## 🤝 Contribuir
 
-1. Fork el proyecto
-2. Crea una branch: `git checkout -b feature/nueva-caracteristica`
-3. Commit tus cambios: `git commit -m 'Añadir nueva característica'`
-4. Push a la branch: `git push origin feature/nueva-caracteristica`
-5. Abre un Pull Request
+### Proceso de Contribución
+1. Fork del repositorio
+2. Crear feature branch: `git checkout -b feature/nueva-funcionalidad`
+3. Hacer cambios con tests incluidos
+4. Verificar que pasen todos los tests: `npm test`
+5. Commit: `git commit -m 'feat: añadir nueva funcionalidad'`
+6. Push: `git push origin feature/nueva-funcionalidad`
+7. Crear Pull Request
+
+### Estándares de Código
+- **TypeScript estricto** - Sin `any`, tipos explícitos
+- **Tests obligatorios** - Para nueva funcionalidad
+- **ESLint + Prettier** - Formato consistente
+- **Conventional Commits** - Para changelog automático
+
+## 📈 Roadmap
+
+### Próximas Funcionalidades
+- [ ] **Perfiles de instalación** - Guardar configuraciones
+- [ ] **Sincronización en la nube** - Backup de selecciones
+- [ ] **Scripts de desinstalación** - Reverting changes
+- [ ] **Detección de apps instaladas** - Estado actual del sistema
+- [ ] **Temas personalizables** - Dark mode y más colores
+
+### Mejoras Técnicas
+- [ ] **Service Workers** - Funcionalidad offline
+- [ ] **PWA completa** - Instalación en dispositivos
+- [ ] **WebAssembly** - Parser de dependencies más rápido
+- [ ] **Streaming** - Instalación en tiempo real
 
 ## 📄 Licencia
 
-MIT License - ver el archivo [LICENSE](LICENSE) para detalles.
+MIT License - Ver [LICENSE](LICENSE) para detalles completos.
 
 ## 🙏 Agradecimientos
 
-- **Homebrew** - Sistema de gestión de paquetes para macOS
-- **Font Awesome** - Iconografía completa
-- **Tailwind CSS** - Framework de CSS utilitario
-- **React Team** - Por la increíble biblioteca de UI
-- **Vite Team** - Por el build tool ultrarrápido
+- **[Homebrew](https://brew.sh)** - El mejor package manager para macOS
+- **[Homebrew API](https://formulae.brew.sh/api/)** - Datos actualizados de paquetes
+- **React Team** - Por la increíble biblioteca UI
+- **Tailwind CSS** - Framework CSS que hace el diseño un placer
+- **Vite Team** - Build tool que revolucionó el desarrollo
 
 ---
 
 <div align="center">
-  <p>Hecho con ❤️ para la comunidad macOS</p>
+  <p><strong>Hecho con ❤️ para simplificar la configuración de macOS</strong></p>
   <p>
-    <a href="https://github.com/thebrokenbrain/macos-setup-assistant">⭐ Star este proyecto</a> si te resulta útil
+    <a href="https://github.com/thebrokenbrain/macos-setup-assistant">⭐ Dale una estrella</a> si este proyecto te resulta útil
+  </p>
+  <p>
+    <a href="https://github.com/thebrokenbrain/macos-setup-assistant/issues">🐛 Reportar bug</a> · 
+    <a href="https://github.com/thebrokenbrain/macos-setup-assistant/issues">💡 Solicitar feature</a> ·
+    <a href="https://github.com/thebrokenbrain/macos-setup-assistant/discussions">💬 Discusiones</a>
   </p>
 </div>
