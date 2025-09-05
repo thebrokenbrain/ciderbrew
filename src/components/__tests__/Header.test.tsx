@@ -18,19 +18,19 @@ describe('Header Component', () => {
   it('should show ready to install message when apps are selected', () => {
     render(<Header selectedCount={5} totalApps={29} />);
     
-    expect(screen.getByText('5 aplicaciones listas para instalar')).toBeInTheDocument();
+    expect(screen.getByText('5 apps listas')).toBeInTheDocument();
   });
 
   it('should not show ready message for single selection (homebrew only)', () => {
     render(<Header selectedCount={1} totalApps={29} />);
     
     expect(screen.getByText('29 aplicaciones disponibles para seleccionar')).toBeInTheDocument();
-    expect(screen.queryByText('1 aplicaciones listas para instalar')).not.toBeInTheDocument();
+    expect(screen.queryByText('1 app listas')).not.toBeInTheDocument();
   });
 
   it('should apply correct styling classes', () => {
     const { container } = render(<Header selectedCount={5} totalApps={29} />);
-    expect(container.firstChild).toHaveClass('text-center', 'mb-10');
+    expect(container.firstChild).toHaveClass('text-center', 'mb-8', 'sm:mb-10');
   });
 
   it('should contain setup icon with correct classes', () => {
