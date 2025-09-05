@@ -37,6 +37,6 @@ describe('Header Component', () => {
     const { container } = render(<Header selectedCount={0} totalApps={29} />);
     const iconElement = container.querySelector('img[alt="macOS Setup Assistant"]');
     expect(iconElement).toBeInTheDocument();
-    expect(iconElement).toHaveClass('w-16', 'h-16', 'object-contain');
+    expect(iconElement).toHaveClass('w-20', 'h-20', 'object-contain');
   });
 });

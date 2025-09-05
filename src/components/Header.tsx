@@ -11,18 +11,28 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
   return (
     <header className="text-center mb-8 sm:mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
       <div className="text-white">
-        <div className="flex justify-center mb-3 sm:mb-4">
+        {/* Main Title Section with Icon and Text */}
+        <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mb-3 sm:mb-4">
+          {/* Custom PNG Icon - Left Side */}
           <img 
             src={iconImage} 
             alt="macOS Setup Assistant" 
-            className="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain"
+            className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-44 lg:h-44 xl:w-52 xl:h-52 object-contain"
           />
+          
+          {/* Title with Cider Bottle - Right Side */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light">
+              macOS Setup Assistant
+            </h1>
+            <i className="fa fa-wine-bottle text-primary-400 text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"></i>
+          </div>
         </div>
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-light mb-3 sm:mb-4">
-          macOS Setup Assistant
-        </h1>
-        <p className="text-base sm:text-lg md:text-xl opacity-90 mb-3 sm:mb-4 px-4">
+        <p className="text-base sm:text-lg md:text-xl opacity-90 mb-2 sm:mb-3 px-4">
           Genera tu script personalizado de instalación para macOS
+        </p>
+        <p className="text-xs sm:text-sm md:text-base text-primary-300 opacity-70 mb-3 sm:mb-4 px-4">
+          Pure vibe coding ❤️
         </p>
         
         {/* Selection Summary */}
