@@ -7,24 +7,24 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
   const hasSelections = selectedCount > 1; // More than just homebrew
   
   return (
-    <header className="text-center mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+    <header className="text-center mb-8 sm:mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
       <div className="text-white">
-        <div className="text-6xl mb-4">
+        <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">
           <i className="fas fa-cogs"></i>
         </div>
-        <h1 className="text-4xl md:text-5xl font-light mb-4">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-light mb-3 sm:mb-4">
           macOS Setup Assistant
         </h1>
-        <p className="text-lg md:text-xl opacity-90 mb-4">
+        <p className="text-base sm:text-lg md:text-xl opacity-90 mb-3 sm:mb-4 px-4">
           Genera tu script personalizado de instalación para macOS
         </p>
         
         {/* Selection Summary */}
         {hasSelections && (
-          <div className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 border border-white/30">
+          <div className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
             <i className="fa fa-check-circle text-green-300"></i>
-            <span className="font-medium">
-              {selectedCount} aplicaciones listas para instalar
+            <span className="font-medium text-sm sm:text-base">
+              {selectedCount} app{selectedCount !== 1 ? 's' : ''} listas
             </span>
           </div>
         )}

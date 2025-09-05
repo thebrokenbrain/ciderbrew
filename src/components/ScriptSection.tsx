@@ -118,20 +118,21 @@ export const ScriptSection = ({
       )}
 
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
         <button
           onClick={onHideScript}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gray-500 text-white hover:bg-gray-600 hover:shadow-lg hover:-translate-y-0.5"
+          className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gray-500 text-white hover:bg-gray-600 hover:shadow-lg hover:-translate-y-0.5 text-sm sm:text-base"
         >
           <i className="fa fa-arrow-left"></i>
-          Volver a Selección
+          <span className="hidden sm:inline">Volver a Selección</span>
+          <span className="sm:hidden">Volver</span>
         </button>
 
         <button
           onClick={generateScript}
           disabled={!hasSelections || isGenerating}
           className={`
-            flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300
+            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
             ${hasSelections && !isGenerating
               ? 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-lg hover:-translate-y-0.5'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -155,7 +156,7 @@ export const ScriptSection = ({
           onClick={downloadScript}
           disabled={!generatedScript}
           className={`
-            flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300
+            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
             ${generatedScript
               ? 'bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:-translate-y-0.5'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -163,14 +164,15 @@ export const ScriptSection = ({
           `}
         >
           <i className="fa fa-download"></i>
-          Descargar .sh
+          <span className="hidden sm:inline">Descargar .sh</span>
+          <span className="sm:hidden">Descargar</span>
         </button>
 
         <button
           onClick={copyScript}
           disabled={!generatedScript}
           className={`
-            flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300
+            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
             ${generatedScript
               ? 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -178,14 +180,15 @@ export const ScriptSection = ({
           `}
         >
           <i className="fa fa-copy"></i>
-          Copiar
+          <span className="hidden sm:inline">Copiar</span>
+          <span className="sm:hidden">Copiar</span>
         </button>
       </div>
 
       {/* Script Preview */}
       <div className="script-preview bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-gray-50 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-6 bg-gray-50 border-b border-gray-200">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
             Script de Instalación
           </h3>
           <span className={`text-sm font-medium italic ${getStatusColor()}`}>
@@ -193,8 +196,8 @@ export const ScriptSection = ({
           </span>
         </div>
         
-        <div className="p-6">
-          <pre className="bg-gray-900 text-green-400 p-6 rounded-lg overflow-x-auto min-h-[200px] text-sm font-mono leading-relaxed whitespace-pre-wrap">
+        <div className="p-4 sm:p-6">
+          <pre className="bg-gray-900 text-green-400 p-4 sm:p-6 rounded-lg overflow-x-auto min-h-[200px] text-xs sm:text-sm font-mono leading-relaxed whitespace-pre-wrap">
             {generatedScript || `# Tu script aparecerá aquí...
 # Selecciona las aplicaciones que deseas instalar y haz clic en "Generar Script"
 #
@@ -211,18 +214,18 @@ export const ScriptSection = ({
 
       {/* Usage Instructions */}
       {generatedScript && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+        <div className="mt-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl">
           <div className="flex items-start gap-3">
-            <i className="fa fa-info-circle text-blue-500 mt-1"></i>
+            <i className="fa fa-info-circle text-blue-500 mt-1 text-sm sm:text-base"></i>
             <div>
-              <h4 className="font-semibold text-blue-900 mb-2">
+              <h4 className="font-semibold text-blue-900 mb-2 text-sm sm:text-base">
                 Cómo usar el script:
               </h4>
-              <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Descarga el archivo <code className="bg-white px-1 rounded">macos-setup.sh</code></li>
-                <li>2. Abre Terminal y navega a la carpeta de descarga</li>
-                <li>3. Ejecuta: <code className="bg-white px-1 rounded">chmod +x macos-setup.sh</code></li>
-                <li>4. Ejecuta: <code className="bg-white px-1 rounded">./macos-setup.sh</code></li>
+              <ol className="text-xs sm:text-sm text-blue-800 space-y-1">
+                <li>1. Descarga el archivo <code className="bg-white px-1 rounded text-xs">macos-setup.sh</code></li>
+                <li>2. Abre Terminal y navega a la carpeta</li>
+                <li>3. Ejecuta: <code className="bg-white px-1 rounded text-xs">chmod +x macos-setup.sh</code></li>
+                <li>4. Ejecuta: <code className="bg-white px-1 rounded text-xs">./macos-setup.sh</code></li>
               </ol>
             </div>
           </div>

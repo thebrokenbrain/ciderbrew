@@ -36,7 +36,7 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
     <div
       onClick={handleClick}
       className={`
-        relative p-6 rounded-2xl transition-all duration-300 cursor-pointer border-2
+        relative p-4 sm:p-6 rounded-2xl transition-all duration-300 cursor-pointer border-2
         ${app.isSpecial 
           ? 'bg-gradient-to-br from-amber-100 to-orange-100 border-amber-200' 
           : 'bg-gray-50 border-gray-200'
@@ -52,7 +52,7 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
     >
       {/* App Icon */}
       <div className={`
-        w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white mb-4
+        w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-xl sm:text-2xl text-white mb-3 sm:mb-4
         ${app.isSpecial ? 'bg-orange-500' : 'bg-primary-500'}
       `}>
         <i className={`fa ${app.icon}`}></i>
@@ -60,7 +60,7 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
 
       {/* App Info */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
           {app.name}
           {app.isRequired && (
             <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
@@ -68,14 +68,14 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
             </span>
           )}
         </h3>
-        <p className="text-gray-600 text-sm mb-3">
+        <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">
           {app.description}
         </p>
         {getInstallTypeBadge()}
       </div>
 
       {/* Checkbox */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
         <div className="relative">
           <input
             type="checkbox"
@@ -85,7 +85,7 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
             className="sr-only"
           />
           <div className={`
-            w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200
+            w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200
             ${isSelected 
               ? app.isSpecial 
                 ? 'bg-orange-500 border-orange-500' 
@@ -147,7 +147,7 @@ export const AppGrid = ({ apps, selectedApps, onToggleApp }: AppGridProps) => {
       </div>
 
       {/* Apps Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {apps.map((app) => (
           <AppCard
             key={app.id}
