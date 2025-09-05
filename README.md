@@ -6,7 +6,8 @@ Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tail
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.1-646CFF?logo=vite&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-52%20passing-green?logo=jest)
+![Tests](https://img.shields.io/badge/Tests-80%20passing-green?logo=jest)
+![CI](https://github.com/thebrokenbrain/macos-setup-assistant/actions/workflows/ci.yml/badge.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-ARM64%20%7C%20Intel-blue?logo=apple)
 
 ## 🌟 Demo en Vivo
@@ -85,7 +86,7 @@ src/
 │   └── useDebounce.ts        # Debouncing para búsqueda
 ├── types/                     # Sistema de tipos unificado
 │   └── api.ts                # Tipos SearchableApp y más
-└── __tests__/                # Suite de tests completa (52 tests)
+└── __tests__/                # Suite de tests completa (80 tests)
     ├── components/           # Tests de componentes
     └── services/            # Tests de servicios y lógica
 ```
@@ -154,11 +155,11 @@ npm run preview
 ## 🧪 Testing
 
 ### Estado Actual
-- ✅ **52 tests pasando** en 7 test suites
+- ✅ **80 tests pasando** en 11 test suites
 - ✅ **Cobertura completa** de servicios críticos
 - ✅ **Tests de integración** para búsqueda híbrida
 - ✅ **Tests de arquitectura** para detección ARM64/Intel
-- ✅ **CI/CD** con GitHub Actions
+- ✅ **CI/CD automático** con GitHub Actions
 
 ```bash
 # Ejecutar todos los tests
@@ -177,6 +178,12 @@ npm run test:coverage
 - **ScriptGenerator**: Generación y opciones de scripts
 - **Components**: Header, AppCard con arquitectura
 - **Integration**: Tests end-to-end de flujos completos
+
+### CI/CD con GitHub Actions
+- ✅ **Tests automáticos** en cada push y pull request
+- ✅ **Build verification** antes del merge a main
+- ✅ **Deploy automático** a GitHub Pages después de tests exitosos
+- ✅ **Badge en tiempo real** mostrando estado de build
 
 ## 🎨 Personalización
 
