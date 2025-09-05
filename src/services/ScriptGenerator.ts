@@ -1,21 +1,8 @@
-import type { App, ScriptGenerationOptions } from '../types';
+import type { SearchableApp, ScriptGenerationOptions } from '../types/api';
 
 export class ScriptGenerator {
-  private static getInstallCommand(app: App): string {
-    switch (app.installType) {
-      case 'brew':
-        return `brew install ${app.command}`;
-      case 'brew-cask':
-        return `brew install --cask ${app.command}`;
-      case 'curl-script':
-        return app.command;
-      case 'xcode-select':
-        return app.command;
-      case 'mas':
-        return `mas install ${app.command}`;
-      default:
-        return app.command;
-    }
+  private static getInstallCommand(app: SearchableApp): string {
+    return app.command;
   }
 
   private static generateHeader(options: ScriptGenerationOptions): string {
@@ -52,201 +39,254 @@ show_success() {
 # Función para mostrar error
 show_error() {
     echo "❌ Error: $1"
-    exit 1
 }
-
-# Verificar si estamos en macOS
-if [[ "$(uname)" != "Darwin" ]]; then
-    show_error "Este script solo funciona en macOS"
-fi
 `;
   }
 
   private static generateHomebrewInstallation(): string {
     return `
-# Instalar Homebrew
-show_progress "Instalando Homebrew (gestor de paquetes)..."
+# Verificar e instalar Homebrew
+show_progress "Verificando Homebrew..."
 if ! command -v brew &> /dev/null; then
+    echo "Homebrew no encontrado. Instalando..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    
+    # Agregar Homebrew al PATH para Apple Silicon Macs
+    if [[ $(uname -m) == "arm64" ]]; then
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+    
     show_success "Homebrew instalado correctamente"
 else
-    show_success "Homebrew ya está instalado"
+    echo "✅ Homebrew ya está instalado"
 fi
 
 # Actualizar Homebrew
-show_progress "Actualizando Homebrew..."
+echo "Actualizando Homebrew..."
 brew update
-show_success "Homebrew actualizado"
 `;
   }
 
-  private static generateXcodeInstallation(): string {
-    return `
-# Instalar Xcode Command Line Tools
-show_progress "Instalando Xcode Command Line Tools..."
-if ! xcode-select -p &> /dev/null; then
-    xcode-select --install
-    echo "⚠️  Se abrirá una ventana para instalar Xcode Command Line Tools."
-    echo "    Por favor, sigue las instrucciones y presiona Enter cuando termine."
-    read -p "Presiona Enter para continuar..."
-    show_success "Xcode Command Line Tools instalado"
-else
-    show_success "Xcode Command Line Tools ya está instalado"
-fi
-`;
-  }
+  private static generatePackageInstallation(apps: SearchableApp[], options: ScriptGenerationOptions): string {
+    const brewApps = apps.filter(app => app.installType === 'brew');
+    const caskApps = apps.filter(app => app.installType === 'brew-cask');
 
-  private static generateOhMyZshInstallation(): string {
-    return `
-# Instalar Oh My Zsh
-show_progress "Instalando Oh My Zsh..."
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    show_success "Oh My Zsh instalado correctamente"
-    echo "💡 Para activar Oh My Zsh, reinicia tu terminal o ejecuta: source ~/.zshrc"
-else
-    show_success "Oh My Zsh ya está instalado"
-fi
-`;
-  }
+    let script = '';
 
-  private static generateBrewPackagesInstallation(apps: App[]): string {
-    if (apps.length === 0) return '';
-
-    const packages = apps.map(app => app.command).join(' ');
-    
-    return `
-# Instalar paquetes con Homebrew
-show_progress "Instalando paquetes de línea de comandos..."
-brew install ${packages}
-show_success "Paquetes de línea de comandos instalados"
-`;
-  }
-
-  private static generateCaskInstallation(apps: App[]): string {
-    if (apps.length === 0) return '';
-
-    let script = `
-# Instalar aplicaciones con Homebrew Cask
-show_progress "Instalando aplicaciones..."`;
-
-    apps.forEach(app => {
-      script += `
-echo "  → Instalando ${app.name}..."
-${ScriptGenerator.getInstallCommand(app)}`;
-    });
-
-    script += `
-show_success "Aplicaciones instaladas correctamente"
-`;
-
-    return script;
-  }
-
-  private static generateFooter(apps: App[]): string {
-    const appList = apps.map(app => `echo "  - ${app.name}"`).join('\n');
-    
-    const postInstallNotes = apps
-      .filter(app => app.postInstallNotes)
-      .map(app => `echo "💡 ${app.name}: ${app.postInstallNotes}"`)
-      .join('\n');
-
-    return `
-echo ""
-echo "🎉 ¡Configuración completada!"
-echo "=================================================="
-echo "Aplicaciones instaladas:"
-${appList}
-echo ""
-${postInstallNotes ? `${postInstallNotes}\necho ""` : ''}echo "🔄 Es recomendable reiniciar algunas aplicaciones para aplicar todos los cambios."
-echo "💡 Puedes personalizar aún más tu configuración según tus necesidades."
-`;
-  }
-
-  public static generate(
-    selectedApps: App[], 
-    options: ScriptGenerationOptions = {
-      includeComments: true,
-      includeProgressIndicators: true,
-      includeErrorHandling: true
-    }
-  ): string {
-    let script = this.generateHeader(options);
-
-    if (options.includeProgressIndicators) {
-      script += this.generateProgressFunctions();
-    }
-
-    // Separate apps by type
-    const homebrew = selectedApps.find(app => app.id === 'homebrew');
-    const xcode = selectedApps.find(app => app.id === 'xcode-tools');
-    const ohMyZsh = selectedApps.find(app => app.id === 'oh-my-zsh');
-    
-    const brewApps = selectedApps.filter(app => 
-      app.installType === 'brew' && app.id !== 'homebrew'
-    );
-    
-    const caskApps = selectedApps.filter(app => 
-      app.installType === 'brew-cask'
-    );
-
-    // Install Homebrew first if selected
-    if (homebrew) {
-      script += this.generateHomebrewInstallation();
-    }
-
-    // Install Xcode Command Line Tools if selected
-    if (xcode) {
-      script += this.generateXcodeInstallation();
-    }
-
-    // Install brew packages
+    // Install CLI packages
     if (brewApps.length > 0) {
-      script += this.generateBrewPackagesInstallation(brewApps);
+      script += `
+show_progress "Instalando herramientas de línea de comandos (${brewApps.length})..."`;
+
+      brewApps.forEach(app => {
+        script += `
+echo "  → Instalando ${app.name}..."
+if ${this.getInstallCommand(app)}; then
+    show_success "${app.name} instalado"
+else
+    show_error "No se pudo instalar ${app.name}"
+    ${options.skipConfirmations ? '' : 'read -p "¿Continuar con la instalación? (y/n): " -n 1 -r; echo; [[ $REPLY =~ ^[Yy]$ ]] || exit 1'}
+fi`;
+      });
     }
 
-    // Install cask applications
+    // Install GUI applications
     if (caskApps.length > 0) {
-      script += this.generateCaskInstallation(caskApps);
-    }
+      script += `
+show_progress "Instalando aplicaciones (${caskApps.length})..."`;
 
-    // Install Oh My Zsh if selected
-    if (ohMyZsh) {
-      script += this.generateOhMyZshInstallation();
+      caskApps.forEach(app => {
+        script += `
+echo "  → Instalando ${app.name}..."
+if ${this.getInstallCommand(app)}; then
+    show_success "${app.name} instalado"
+else
+    show_error "No se pudo instalar ${app.name}"
+    ${options.skipConfirmations ? '' : 'read -p "¿Continuar con la instalación? (y/n): " -n 1 -r; echo; [[ $REPLY =~ ^[Yy]$ ]] || exit 1'}
+fi`;
+      });
     }
-
-    // Add footer
-    script += this.generateFooter(selectedApps);
 
     return script;
   }
 
-  public static downloadScript(content: string, filename = 'macos-setup.sh'): void {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+  private static generateCleanup(options: ScriptGenerationOptions): string {
+    if (!options.includeCleanup) return '';
+
+    return `
+show_progress "Limpiando archivos temporales..."
+brew cleanup
+show_success "Limpieza completada"
+`;
   }
 
-  public static async copyToClipboard(content: string): Promise<void> {
-    try {
+  private static generateFooter(apps: SearchableApp[]): string {
+    const brewApps = apps.filter(app => app.installType === 'brew');
+    const caskApps = apps.filter(app => app.installType === 'brew-cask');
+
+    return `
+echo ""
+echo "🎉 ¡Configuración de macOS completada!"
+echo "=================================================="
+echo "📦 Resumen de instalación:"
+echo "   • ${brewApps.length} herramientas de línea de comandos"
+echo "   • ${caskApps.length} aplicaciones"
+echo "   • Total: ${apps.length} paquetes"
+echo ""
+echo "📋 Aplicaciones instaladas:"
+${apps.map(app => `echo "   ✓ ${app.name} (${app.installType === 'brew' ? 'CLI' : 'APP'})"`).join('\n')}
+echo ""
+echo "💡 Para verificar las instalaciones, ejecuta:"
+echo "   brew list --formula  # Herramientas CLI"
+echo "   brew list --cask     # Aplicaciones"
+echo ""
+echo "✨ ¡Disfruta tu macOS configurado!"
+`;
+  }
+
+  /**
+   * Main script generation method
+   */
+  static generate(
+    selectedApps: SearchableApp[],
+    options: ScriptGenerationOptions = {}
+  ): string {
+    return this.generateInstallScript(selectedApps, options);
+  }
+
+  /**
+   * Generate a complete installation script
+   */
+  static generateInstallScript(
+    selectedApps: SearchableApp[],
+    options: ScriptGenerationOptions = {}
+  ): string {
+    const defaultOptions: ScriptGenerationOptions = {
+      includeUpdates: true,
+      includeCleanup: true,
+      verboseOutput: false,
+      skipConfirmations: false,
+      ...options
+    };
+
+    if (selectedApps.length === 0) {
+      return '# No hay aplicaciones seleccionadas para instalar';
+    }
+
+    const script = [
+      this.generateHeader(defaultOptions),
+      this.generateProgressFunctions(),
+      this.generateHomebrewInstallation(),
+      this.generatePackageInstallation(selectedApps, defaultOptions),
+      this.generateCleanup(defaultOptions),
+      this.generateFooter(selectedApps)
+    ].join('\n');
+
+    return script;
+  }
+
+  /**
+   * Generate a simple list of brew commands
+   */
+  static generateCommandList(selectedApps: SearchableApp[]): string {
+    if (selectedApps.length === 0) {
+      return '# No hay aplicaciones seleccionadas';
+    }
+
+    const brewApps = selectedApps.filter(app => app.installType === 'brew');
+    const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
+
+    let commands = '# Comandos de instalación\n\n';
+    
+    if (brewApps.length > 0) {
+      commands += '# Herramientas de línea de comandos\n';
+      brewApps.forEach(app => {
+        commands += `${app.command}  # ${app.name}\n`;
+      });
+      commands += '\n';
+    }
+
+    if (caskApps.length > 0) {
+      commands += '# Aplicaciones\n';
+      caskApps.forEach(app => {
+        commands += `${app.command}  # ${app.name}\n`;
+      });
+    }
+
+    return commands;
+  }
+
+  /**
+   * Generate Brewfile for use with `brew bundle`
+   */
+  static generateBrewfile(selectedApps: SearchableApp[]): string {
+    if (selectedApps.length === 0) {
+      return '# No hay aplicaciones seleccionadas';
+    }
+
+    const brewApps = selectedApps.filter(app => app.installType === 'brew');
+    const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
+
+    let brewfile = '# Brewfile generado por macOS Setup Assistant\n\n';
+
+    if (brewApps.length > 0) {
+      brewfile += '# Herramientas de línea de comandos\n';
+      brewApps.forEach(app => {
+        // Extract package name from command
+        const packageName = app.command.replace('brew install ', '');
+        brewfile += `brew "${packageName}"  # ${app.name}\n`;
+      });
+      brewfile += '\n';
+    }
+
+    if (caskApps.length > 0) {
+      brewfile += '# Aplicaciones\n';
+      caskApps.forEach(app => {
+        // Extract package name from command
+        const packageName = app.command.replace('brew install --cask ', '');
+        brewfile += `cask "${packageName}"  # ${app.name}\n`;
+      });
+    }
+
+    brewfile += '\n# Para instalar: brew bundle --file=Brewfile\n';
+
+    return brewfile;
+  }
+
+  /**
+   * Download script as file
+   */
+  static downloadScript(content: string, filename: string = 'setup-script.sh'): void {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Copy script to clipboard
+   */
+  static async copyToClipboard(content: string): Promise<void> {
+    if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(content);
-    } catch (err) {
+    } else {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = content;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
       document.body.appendChild(textArea);
+      textArea.focus();
       textArea.select();
       document.execCommand('copy');
-      document.body.removeChild(textArea);
+      textArea.remove();
     }
   }
 }

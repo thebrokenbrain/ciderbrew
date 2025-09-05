@@ -1,120 +1,103 @@
-import { useState, useCallback, useMemo } from 'react';
-import type { App, AppCategory, Toast } from '../types';
-import { appConfig } from '../data/apps';
+import { useState, useCallback } from 'react';
+import type { SearchableApp } from '../types/api';
+import type { Toast } from '../types';
 
-export const useAppSelection = () => {
-  const [selectedApps, setSelectedApps] = useState<Set<string>>(
-    new Set(['homebrew']) // Homebrew is always selected
-  );
-  
-  const [activeCategory, setActiveCategory] = useState<AppCategory>('desarrollo');
+export interface AppSelectionState {
+  selectedApps: Map<string, SearchableApp>;
+  selectedIds: Set<string>;
+  count: number;
+  toasts: Toast[];
+}
+
+export interface AppSelectionActions {
+  selectApp: (app: SearchableApp) => void;
+  deselectApp: (appId: string) => void;
+  toggleApp: (app: SearchableApp, isSelected: boolean) => void;
+  clearSelection: () => void;
+  isSelected: (appId: string) => boolean;
+  getSelectedApps: () => SearchableApp[];
+  getSelectionArray: () => SearchableApp[];
+  addToast: (toast: Omit<Toast, 'id'>) => void;
+  removeToast: (id: string) => void;
+}
+
+export function useAppSelection(): AppSelectionState & AppSelectionActions {
+  const [selectedApps, setSelectedApps] = useState<Map<string, SearchableApp>>(new Map());
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [showScriptSection, setShowScriptSection] = useState<boolean>(false);
 
-  const toggleApp = useCallback((appId: string, isSelected: boolean) => {
+  const selectApp = useCallback((app: SearchableApp) => {
     setSelectedApps(prev => {
-      const newSet = new Set(prev);
-      if (isSelected) {
-        newSet.add(appId);
-      } else {
-        // Don't allow deselecting required apps
-        const app = appConfig.apps.find(a => a.id === appId);
-        if (!app?.isRequired) {
-          newSet.delete(appId);
-        }
-      }
-      // Always keep homebrew selected
-      newSet.add('homebrew');
-      return newSet;
+      const newMap = new Map(prev);
+      newMap.set(app.id, { ...app, isSelected: true });
+      return newMap;
     });
   }, []);
 
-  const selectAllInCategory = useCallback((category: AppCategory) => {
-    const categoryApps = appConfig.apps
-      .filter(app => app.category === category)
-      .map(app => app.id);
-    
+  const deselectApp = useCallback((appId: string) => {
     setSelectedApps(prev => {
-      const newSet = new Set(prev);
-      categoryApps.forEach(appId => newSet.add(appId));
-      return newSet;
+      const newMap = new Map(prev);
+      newMap.delete(appId);
+      return newMap;
     });
   }, []);
 
-  const deselectAllInCategory = useCallback((category: AppCategory) => {
-    const categoryApps = appConfig.apps
-      .filter(app => app.category === category && !app.isRequired)
-      .map(app => app.id);
-    
-    setSelectedApps(prev => {
-      const newSet = new Set(prev);
-      categoryApps.forEach(appId => newSet.delete(appId));
-      newSet.add('homebrew'); // Always keep homebrew
-      return newSet;
-    });
+  const toggleApp = useCallback((app: SearchableApp, isSelected: boolean) => {
+    if (isSelected) {
+      selectApp(app);
+    } else {
+      deselectApp(app.id);
+    }
+  }, [selectApp, deselectApp]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedApps(new Map());
   }, []);
 
-  const clearAllSelections = useCallback(() => {
-    setSelectedApps(new Set(['homebrew']));
-  }, []);
-
-  const addToast = useCallback((message: string, type: Toast['type'] = 'success', duration = 3000) => {
-    const toast: Toast = {
-      id: Math.random().toString(36).substr(2, 9),
-      message,
-      type,
-      duration
-    };
-    
-    setToasts(prev => [...prev, toast]);
-    
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== toast.id));
-    }, duration);
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
-  const selectedAppsList = useMemo(() => {
-    return Array.from(selectedApps)
-      .map(id => appConfig.apps.find(app => app.id === id))
-      .filter((app): app is App => app !== undefined);
+  const isSelected = useCallback((appId: string) => {
+    return selectedApps.has(appId);
   }, [selectedApps]);
 
-  const appsByCategory = useMemo(() => {
-    return appConfig.apps.filter(app => app.category === activeCategory);
-  }, [activeCategory]);
+  const getSelectedApps = useCallback(() => {
+    return Array.from(selectedApps.values());
+  }, [selectedApps]);
 
-  const selectedCount = selectedApps.size;
-  const hasSelections = selectedCount > 1; // More than just homebrew
+  const getSelectionArray = useCallback(() => {
+    return Array.from(selectedApps.values());
+  }, [selectedApps]);
 
-  const showScriptGenerator = useCallback(() => {
-    setShowScriptSection(true);
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
-  const hideScriptGenerator = useCallback(() => {
-    setShowScriptSection(false);
+  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    const newToast: Toast = { ...toast, id };
+    
+    setToasts(prev => [...prev, newToast]);
+    
+    // Auto remove toast after duration
+    if (toast.duration && toast.duration > 0) {
+      setTimeout(() => {
+        setToasts(prevToasts => prevToasts.filter(t => t.id !== id));
+      }, toast.duration);
+    }
   }, []);
+
+  const selectedIds = new Set(selectedApps.keys());
 
   return {
     selectedApps,
-    selectedAppsList,
-    selectedCount,
-    hasSelections,
-    activeCategory,
-    setActiveCategory,
-    appsByCategory,
-    toggleApp,
-    selectAllInCategory,
-    deselectAllInCategory,
-    clearAllSelections,
+    selectedIds,
+    count: selectedApps.size,
     toasts,
+    selectApp,
+    deselectApp,
+    toggleApp,
+    clearSelection,
+    isSelected,
+    getSelectedApps,
+    getSelectionArray,
     addToast,
-    removeToast,
-    showScriptSection,
-    showScriptGenerator,
-    hideScriptGenerator
+    removeToast
   };
-};
+}

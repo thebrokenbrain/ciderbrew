@@ -1,236 +1,309 @@
-import { useState, useEffect } from 'react';
-import type { App } from '../types';
+import React, { useState, useEffect } from 'react';
+import type { SearchableApp } from '../types/api';
+import type { Toast } from '../types';
 import { ScriptGenerator } from '../services/ScriptGenerator';
 
 interface ScriptSectionProps {
-  selectedApps: App[];
-  hasSelections: boolean;
-  selectedCount: number;
-  onShowToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
-  onHideScript: () => void;
-  autoGenerate?: boolean;
+  selectedApps: SearchableApp[];
+  onClose: () => void;
+  onToast: (toast: Omit<Toast, 'id'>) => void;
 }
 
-export const ScriptSection = ({ 
+export const ScriptSection: React.FC<ScriptSectionProps> = ({ 
   selectedApps, 
-  hasSelections, 
-  selectedCount, 
-  onShowToast,
-  onHideScript,
-  autoGenerate = false
-}: ScriptSectionProps) => {
+  onClose,
+  onToast
+}) => {
   const [generatedScript, setGeneratedScript] = useState<string>('');
+  const [scriptType, setScriptType] = useState<'script' | 'commands' | 'brewfile'>('script');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [scriptOptions, setScriptOptions] = useState({
+    includeUpdates: true,
+    includeCleanup: true,
+    verboseOutput: false,
+    skipConfirmations: false,
+    customHeader: ''
+  });
 
-  // Auto-generate script when component mounts if autoGenerate is true
+  // Auto-generate script when component mounts
   useEffect(() => {
-    if (autoGenerate && hasSelections && !generatedScript) {
-      generateScript();
-    }
-  }, [autoGenerate, hasSelections]);
+    generateScript();
+  }, [selectedApps, scriptType, scriptOptions]);
 
   const generateScript = async () => {
-    if (!hasSelections) {
-      onShowToast('Selecciona al menos una aplicación para instalar', 'error');
-      return;
-    }
+    if (selectedApps.length === 0) return;
 
     setIsGenerating(true);
-    
-    // Simulate generation delay for better UX
-    setTimeout(() => {
-      const script = ScriptGenerator.generate(selectedApps);
-      setGeneratedScript(script);
-      setIsGenerating(false);
-      onShowToast('Script generado correctamente');
+    try {
+      let script = '';
       
-      // Scroll to script section
-      document.querySelector('.script-preview')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      switch (scriptType) {
+        case 'script':
+          script = ScriptGenerator.generateInstallScript(selectedApps, scriptOptions);
+          break;
+        case 'commands':
+          script = ScriptGenerator.generateCommandList(selectedApps);
+          break;
+        case 'brewfile':
+          script = ScriptGenerator.generateBrewfile(selectedApps);
+          break;
+      }
+      
+      setGeneratedScript(script);
+    } catch (error) {
+      console.error('Error generating script:', error);
+      onToast({
+        message: 'Error al generar el script',
+        type: 'error',
+        duration: 3000
       });
-    }, 1000);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const downloadScript = () => {
-    if (!generatedScript) {
-      onShowToast('Primero genera el script', 'error');
-      return;
-    }
+    const filenames = {
+      script: 'macos-setup.sh',
+      commands: 'brew-commands.txt',
+      brewfile: 'Brewfile'
+    };
 
-    ScriptGenerator.downloadScript(generatedScript);
-    onShowToast('Script descargado como macos-setup.sh');
+    const blob = new Blob([generatedScript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filenames[scriptType];
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    onToast({
+      message: `${filenames[scriptType]} descargado exitosamente`,
+      type: 'success',
+      duration: 3000
+    });
   };
 
-  const copyScript = async () => {
-    if (!generatedScript) {
-      onShowToast('Primero genera el script', 'error');
-      return;
-    }
-
+  const copyToClipboard = async () => {
     try {
-      await ScriptGenerator.copyToClipboard(generatedScript);
-      onShowToast('Script copiado al portapapeles');
+      await navigator.clipboard.writeText(generatedScript);
+      onToast({
+        message: 'Script copiado al portapapeles',
+        type: 'success',
+        duration: 3000
+      });
     } catch (error) {
-      onShowToast('Error al copiar el script', 'error');
+      console.error('Error copying to clipboard:', error);
+      onToast({
+        message: 'Error al copiar al portapapeles',
+        type: 'error',
+        duration: 3000
+      });
     }
   };
 
-  const getStatusMessage = () => {
-    if (generatedScript) {
-      return `Script generado con ${selectedCount} aplicaciones - Listo para descargar`;
-    } else if (hasSelections) {
-      return `${selectedCount} aplicaciones seleccionadas - Listo para generar script`;
-    } else {
-      return 'Selecciona aplicaciones para generar el script';
-    }
-  };
-
-  const getStatusColor = () => {
-    if (generatedScript) return 'text-green-600';
-    if (hasSelections) return 'text-blue-600';
-    return 'text-gray-500';
-  };
+  const brewApps = selectedApps.filter(app => app.installType === 'brew');
+  const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
 
   return (
-    <div className="mt-10 bg-gray-50 rounded-2xl p-8">
-      {/* Selected Apps Summary */}
-      {hasSelections && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <i className="fa fa-list-check text-blue-600"></i>
-            <h3 className="font-semibold text-blue-900">
-              Aplicaciones seleccionadas ({selectedCount})
+    <div className="mt-6 bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <i className="fas fa-code text-xl"></i>
+          <div>
+            <h2 className="text-lg font-semibold">Generador de Script</h2>
+            <p className="text-gray-300 text-sm">
+              {selectedApps.length} aplicación{selectedApps.length !== 1 ? 'es' : ''} seleccionada{selectedApps.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-gray-300 hover:text-white transition-colors duration-200"
+        >
+          <i className="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 sm:p-6">
+        {/* App Summary */}
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <i className="fas fa-terminal text-green-600"></i>
+              <span className="font-medium text-green-800">Herramientas CLI</span>
+            </div>
+            <p className="text-2xl font-bold text-green-600">{brewApps.length}</p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <i className="fas fa-desktop text-blue-600"></i>
+              <span className="font-medium text-blue-800">Aplicaciones</span>
+            </div>
+            <p className="text-2xl font-bold text-blue-600">{caskApps.length}</p>
+          </div>
+        </div>
+
+        {/* Script Type Selector */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Tipo de salida:
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              onClick={() => setScriptType('script')}
+              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                scriptType === 'script'
+                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <i className="fas fa-file-code mr-2"></i>
+              Script Bash
+            </button>
+            <button
+              onClick={() => setScriptType('commands')}
+              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                scriptType === 'commands'
+                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <i className="fas fa-list mr-2"></i>
+              Lista de Comandos
+            </button>
+            <button
+              onClick={() => setScriptType('brewfile')}
+              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                scriptType === 'brewfile'
+                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <i className="fas fa-cube mr-2"></i>
+              Brewfile
+            </button>
+          </div>
+        </div>
+
+        {/* Script Options (only for bash script) */}
+        {scriptType === 'script' && (
+          <div className="mb-6 bg-gray-50 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Opciones del script:</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={scriptOptions.includeUpdates}
+                  onChange={(e) => setScriptOptions(prev => ({ ...prev, includeUpdates: e.target.checked }))}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Incluir actualizaciones</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={scriptOptions.includeCleanup}
+                  onChange={(e) => setScriptOptions(prev => ({ ...prev, includeCleanup: e.target.checked }))}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Incluir limpieza</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={scriptOptions.verboseOutput}
+                  onChange={(e) => setScriptOptions(prev => ({ ...prev, verboseOutput: e.target.checked }))}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Salida detallada</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={scriptOptions.skipConfirmations}
+                  onChange={(e) => setScriptOptions(prev => ({ ...prev, skipConfirmations: e.target.checked }))}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Sin confirmaciones</span>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Script Display */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-gray-700">
+              Script generado:
             </h3>
+            <div className="flex space-x-2">
+              <button
+                onClick={copyToClipboard}
+                disabled={isGenerating || !generatedScript}
+                className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors duration-200 disabled:opacity-50"
+              >
+                <i className="fas fa-copy mr-1"></i>
+                Copiar
+              </button>
+              <button
+                onClick={downloadScript}
+                disabled={isGenerating || !generatedScript}
+                className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 disabled:opacity-50"
+              >
+                <i className="fas fa-download mr-1"></i>
+                Descargar
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {selectedApps.map((app) => (
-              <div key={app.id} className="flex items-center gap-2 text-sm">
-                <i className={`fa ${app.icon} text-blue-600 w-4`}></i>
-                <span className="text-blue-800">{app.name}</span>
-                <span className="text-xs bg-blue-200 text-blue-700 px-1 rounded">
-                  {app.installType}
-                </span>
-              </div>
-            ))}
+          
+          <div className="relative">
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-96 overflow-y-auto">
+              {isGenerating ? (
+                <div className="flex items-center space-x-2 text-gray-400">
+                  <i className="fas fa-spinner fa-spin"></i>
+                  <span>Generando script...</span>
+                </div>
+              ) : (
+                <code>{generatedScript || '# Selecciona aplicaciones para generar el script'}</code>
+              )}
+            </pre>
           </div>
         </div>
-      )}
 
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
-        <button
-          onClick={onHideScript}
-          className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gray-500 text-white hover:bg-gray-600 hover:shadow-lg hover:-translate-y-0.5 text-sm sm:text-base"
-        >
-          <i className="fa fa-arrow-left"></i>
-          <span className="hidden sm:inline">Volver a Selección</span>
-          <span className="sm:hidden">Volver</span>
-        </button>
-
-        <button
-          onClick={generateScript}
-          disabled={!hasSelections || isGenerating}
-          className={`
-            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
-            ${hasSelections && !isGenerating
-              ? 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-lg hover:-translate-y-0.5'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }
-          `}
-        >
-          {isGenerating ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Generando...
-            </>
-          ) : (
-            <>
-              <i className="fa fa-refresh"></i>
-              {generatedScript ? 'Regenerar Script' : 'Generar Script'}
-            </>
-          )}
-        </button>
-
-        <button
-          onClick={downloadScript}
-          disabled={!generatedScript}
-          className={`
-            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
-            ${generatedScript
-              ? 'bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:-translate-y-0.5'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }
-          `}
-        >
-          <i className="fa fa-download"></i>
-          <span className="hidden sm:inline">Descargar .sh</span>
-          <span className="sm:hidden">Descargar</span>
-        </button>
-
-        <button
-          onClick={copyScript}
-          disabled={!generatedScript}
-          className={`
-            flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base
-            ${generatedScript
-              ? 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }
-          `}
-        >
-          <i className="fa fa-copy"></i>
-          <span className="hidden sm:inline">Copiar</span>
-          <span className="sm:hidden">Copiar</span>
-        </button>
-      </div>
-
-      {/* Script Preview */}
-      <div className="script-preview bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-6 bg-gray-50 border-b border-gray-200">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-            Script de Instalación
-          </h3>
-          <span className={`text-sm font-medium italic ${getStatusColor()}`}>
-            {getStatusMessage()}
-          </span>
-        </div>
-        
-        <div className="p-4 sm:p-6">
-          <pre className="bg-gray-900 text-green-400 p-4 sm:p-6 rounded-lg overflow-x-auto min-h-[200px] text-xs sm:text-sm font-mono leading-relaxed whitespace-pre-wrap">
-            {generatedScript || `# Tu script aparecerá aquí...
-# Selecciona las aplicaciones que deseas instalar y haz clic en "Generar Script"
-#
-# El script incluirá:
-# - Instalación automática de Homebrew
-# - Gestión de errores y verificaciones
-# - Mensajes de progreso informativos
-# - Instrucciones post-instalación
-#
-# ¡Todo listo para ejecutar en tu Mac! 🚀`}
-          </pre>
-        </div>
-      </div>
-
-      {/* Usage Instructions */}
-      {generatedScript && (
-        <div className="mt-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl">
-          <div className="flex items-start gap-3">
-            <i className="fa fa-info-circle text-blue-500 mt-1 text-sm sm:text-base"></i>
-            <div>
-              <h4 className="font-semibold text-blue-900 mb-2 text-sm sm:text-base">
-                Cómo usar el script:
-              </h4>
-              <ol className="text-xs sm:text-sm text-blue-800 space-y-1">
-                <li>1. Descarga el archivo <code className="bg-white px-1 rounded text-xs">macos-setup.sh</code></li>
-                <li>2. Abre Terminal y navega a la carpeta</li>
-                <li>3. Ejecuta: <code className="bg-white px-1 rounded text-xs">chmod +x macos-setup.sh</code></li>
-                <li>4. Ejecuta: <code className="bg-white px-1 rounded text-xs">./macos-setup.sh</code></li>
-              </ol>
+        {/* Instructions */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <i className="fas fa-info-circle text-amber-600 mt-1"></i>
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">Instrucciones de uso:</p>
+              {scriptType === 'script' && (
+                <ul className="space-y-1">
+                  <li>1. Descarga el archivo .sh</li>
+                  <li>2. Hazlo ejecutable: <code className="bg-amber-100 px-1 rounded">chmod +x macos-setup.sh</code></li>
+                  <li>3. Ejecuta: <code className="bg-amber-100 px-1 rounded">./macos-setup.sh</code></li>
+                </ul>
+              )}
+              {scriptType === 'commands' && (
+                <ul className="space-y-1">
+                  <li>• Copia y pega los comandos en tu terminal uno por uno</li>
+                  <li>• O ejecuta todos a la vez copiando todo el contenido</li>
+                </ul>
+              )}
+              {scriptType === 'brewfile' && (
+                <ul className="space-y-1">
+                  <li>1. Guarda como "Brewfile" (sin extensión)</li>
+                  <li>2. Ejecuta: <code className="bg-amber-100 px-1 rounded">brew bundle --file=Brewfile</code></li>
+                </ul>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
