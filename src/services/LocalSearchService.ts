@@ -70,7 +70,7 @@ function convertAppConfigToSearchableApps(): SearchableApp[] {
       command: app.command,
       category: app.category,
       source: 'predefined' as const,
-      isSpecial: app.isSpecial
+      isSpecial: app.isSpecial || false // Asegurar que sea boolean
     }));
 }
 
