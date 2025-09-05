@@ -33,10 +33,10 @@ describe('Header Component', () => {
     expect(container.firstChild).toHaveClass('text-center', 'mb-10');
   });
 
-  it('should contain macOS icon with correct classes', () => {
+  it('should contain setup icon with correct classes', () => {
     const { container } = render(<Header selectedCount={0} totalApps={29} />);
-    const iconElement = container.querySelector('.fab.fa-apple');
+    const iconElement = container.querySelector('.fas.fa-cogs');
     expect(iconElement).toBeInTheDocument();
-    expect(iconElement).toHaveClass('fab', 'fa-apple');
+    expect(iconElement).toHaveClass('fas', 'fa-cogs');
   });
 });

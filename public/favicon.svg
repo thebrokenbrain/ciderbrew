@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Fondo circular en azul pastel -->
+  <circle cx="50" cy="50" r="45" fill="#38bdf8" stroke="#0ea5e9" stroke-width="2"/>
+  
+  <!-- Engranaje principal -->
+  <g fill="#ffffff" stroke="#0ea5e9" stroke-width="1">
+    <!-- Engranaje grande -->
+    <circle cx="40" cy="35" r="12"/>
+    <path d="M40 20 L45 25 L40 30 L35 25 Z"/>
+    <path d="M40 40 L45 45 L40 50 L35 45 Z"/>
+    <path d="M25 35 L30 40 L35 35 L30 30 Z"/>
+    <path d="M45 35 L50 40 L55 35 L50 30 Z"/>
+    
+    <!-- Engranaje mediano -->
+    <circle cx="65" cy="50" r="8"/>
+    <path d="M65 38 L68 41 L65 44 L62 41 Z"/>
+    <path d="M65 56 L68 59 L65 62 L62 59 Z"/>
+    <path d="M53 50 L56 53 L59 50 L56 47 Z"/>
+    <path d="M71 50 L74 53 L77 50 L74 47 Z"/>
+    
+    <!-- Engranaje pequeño -->
+    <circle cx="45" cy="70" r="6"/>
+    <path d="M45 61 L47 63 L45 65 L43 63 Z"/>
+    <path d="M45 75 L47 77 L45 79 L43 77 Z"/>
+    <path d="M36 70 L38 72 L40 70 L38 68 Z"/>
+    <path d="M50 70 L52 72 L54 70 L52 68 Z"/>
+  </g>
+  
+  <!-- Agujeros centrales -->
+  <circle cx="40" cy="35" r="4" fill="#38bdf8"/>
+  <circle cx="65" cy="50" r="3" fill="#38bdf8"/>
+  <circle cx="45" cy="70" r="2" fill="#38bdf8"/>
+</svg>

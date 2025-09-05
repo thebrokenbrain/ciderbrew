@@ -10,7 +10,7 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
     <header className="text-center mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
       <div className="text-white">
         <div className="text-6xl mb-4">
-          <i className="fab fa-apple"></i>
+          <i className="fas fa-cogs"></i>
         </div>
         <h1 className="text-4xl md:text-5xl font-light mb-4">
           macOS Setup Assistant
