@@ -33,10 +33,10 @@ describe('Header Component', () => {
     expect(container.firstChild).toHaveClass('text-center', 'mb-8', 'sm:mb-10');
   });
 
-  it('should contain setup icon with correct classes', () => {
+  it('should contain custom icon image with correct classes', () => {
     const { container } = render(<Header selectedCount={0} totalApps={29} />);
-    const iconElement = container.querySelector('.fas.fa-cogs');
+    const iconElement = container.querySelector('img[alt="macOS Setup Assistant"]');
     expect(iconElement).toBeInTheDocument();
-    expect(iconElement).toHaveClass('fas', 'fa-cogs');
+    expect(iconElement).toHaveClass('w-16', 'h-16', 'object-contain');
   });
 });

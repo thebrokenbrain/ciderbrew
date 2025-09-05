@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { SearchableApp } from '../types/api';
-import type { Toast } from '../types';
+import type { SearchableApp, Toast } from '../types/api';
 import { ScriptGenerator } from '../services/ScriptGenerator';
 
 interface ScriptSectionProps {

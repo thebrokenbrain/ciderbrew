@@ -122,3 +122,11 @@ export interface ScriptGenerationOptions {
   verboseOutput?: boolean;
   skipConfirmations?: boolean;
 }
+
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  timeout?: number;
+  duration?: number;
+}

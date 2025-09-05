@@ -2,8 +2,6 @@ import type { SearchableApp, SearchResult } from '../types/api';
 
 class BrewApiService {
   private static searchCache = new Map<string, SearchableApp[]>();
-  private static readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-  private static readonly MAX_RESULTS = 20;
 
   // Curated list of popular packages for faster search
   private static readonly POPULAR_PACKAGES: Record<string, SearchableApp> = {

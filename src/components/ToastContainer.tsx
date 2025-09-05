@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { Toast } from '../types';
+import type { Toast } from '../types/api';
 
 interface ToastItemProps {
   toast: Toast;

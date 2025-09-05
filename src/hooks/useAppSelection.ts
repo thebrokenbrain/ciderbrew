@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { SearchableApp } from '../types/api';
-import type { Toast } from '../types';
+import type { SearchableApp, Toast } from '../types/api';
 
 export interface AppSelectionState {
   selectedApps: Map<string, SearchableApp>;
