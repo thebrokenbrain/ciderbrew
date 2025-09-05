@@ -22,7 +22,7 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
           
           {/* Title with Cider Bottle - Right Side */}
           <div className="flex items-center gap-3 sm:gap-4">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold rounded-lg" style={{ fontFamily: 'Comic Sans MS, cursive, sans-serif' }}>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light">
               macOS Setup Assistant
             </h1>
             <i className="fa fa-wine-bottle text-primary-400 text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"></i>
