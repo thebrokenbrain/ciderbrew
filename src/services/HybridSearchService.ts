@@ -4,6 +4,7 @@ import { ArchitectureDetectionService } from './ArchitectureDetectionService';
 
 export class HybridSearchService {
   private static cache = new Map<string, SearchableApp[]>();
+  private static combinedResultsCache = new Map<string, SearchableApp[]>();
   private static readonly PAGE_SIZE = 12;
   private static readonly API_BASE = 'https://formulae.brew.sh/api';
   
@@ -23,61 +24,94 @@ export class HybridSearchService {
       return { ...featured, source: 'local' as const };
     }
 
-    // 1. Buscar primero en la base de datos local
-    const localResults = LocalSearchService.search(normalizedQuery, 0);
+    // Clave para cache de resultados combinados
+    const cacheKey = `combined_${normalizedQuery}`;
     
-    // Si tenemos suficientes resultados locales, usarlos
-    if (localResults.results.length >= 6) {
-      const startIndex = page * this.PAGE_SIZE;
-      const endIndex = startIndex + this.PAGE_SIZE;
+    // Si es la primera página, hacer búsqueda completa
+    if (page === 0) {
+      // 1. Buscar primero en la base de datos local
+      const localResults = LocalSearchService.search(normalizedQuery, 0);
       
-      return {
-        results: localResults.results.slice(startIndex, endIndex),
-        total: localResults.total,
-        hasMore: endIndex < localResults.total,
-        source: 'local' as const
-      };
-    }
+      // Si tenemos suficientes resultados locales, usarlos
+      if (localResults.results.length >= 6) {
+        const startIndex = page * this.PAGE_SIZE;
+        const endIndex = startIndex + this.PAGE_SIZE;
+        
+        // Guardar todos los resultados locales en cache para páginas siguientes
+        this.combinedResultsCache.set(cacheKey, localResults.results);
+        
+        return {
+          results: localResults.results.slice(startIndex, endIndex),
+          total: localResults.total,
+          hasMore: endIndex < localResults.total,
+          source: 'local' as const
+        };
+      }
 
-    // 2. Si no hay suficientes resultados locales, buscar en API
-    try {
-      const apiResults = await this.searchHomebrew(normalizedQuery);
+      // 2. Si no hay suficientes resultados locales, buscar en API
+      try {
+        const apiResults = await this.searchHomebrew(normalizedQuery);
+        
+        // Combinar resultados: locales primero, luego API (sin duplicados)
+        const localIds = new Set(localResults.results.map(app => app.id));
+        const uniqueApiResults = apiResults.filter(app => !localIds.has(app.id));
+        
+        const combinedResults = [...localResults.results, ...uniqueApiResults];
+        
+        // Guardar todos los resultados combinados en cache
+        this.combinedResultsCache.set(cacheKey, combinedResults);
+        
+        // Paginar la primera página
+        const startIndex = page * this.PAGE_SIZE;
+        const endIndex = startIndex + this.PAGE_SIZE;
+        
+        return {
+          results: combinedResults.slice(startIndex, endIndex),
+          total: combinedResults.length,
+          hasMore: endIndex < combinedResults.length,
+          source: combinedResults.length > localResults.results.length ? 'hybrid' as const : 'local' as const
+        };
+        
+      } catch (error) {
+        console.warn('Error en búsqueda API, usando solo resultados locales:', error);
+        
+        // Si falla la API, devolver solo resultados locales
+        const startIndex = page * this.PAGE_SIZE;
+        const endIndex = startIndex + this.PAGE_SIZE;
+        
+        // Guardar resultados locales en cache
+        this.combinedResultsCache.set(cacheKey, localResults.results);
+        
+        return {
+          results: localResults.results.slice(startIndex, endIndex),
+          total: localResults.total,
+          hasMore: endIndex < localResults.total,
+          source: 'local' as const
+        };
+      }
+    } else {
+      // Para páginas siguientes, usar cache si existe
+      const cachedResults = this.combinedResultsCache.get(cacheKey);
       
-      // Combinar resultados: locales primero, luego API (sin duplicados)
-      const localIds = new Set(localResults.results.map(app => app.id));
-      const uniqueApiResults = apiResults.filter(app => !localIds.has(app.id));
-      
-      const combinedResults = [...localResults.results, ...uniqueApiResults];
-      
-      // Paginar resultados combinados
-      const startIndex = page * this.PAGE_SIZE;
-      const endIndex = startIndex + this.PAGE_SIZE;
-      
-      return {
-        results: combinedResults.slice(startIndex, endIndex),
-        total: combinedResults.length,
-        hasMore: endIndex < combinedResults.length,
-        source: combinedResults.length > localResults.results.length ? 'hybrid' as const : 'local' as const
-      };
-      
-    } catch (error) {
-      console.warn('Error en búsqueda API, usando solo resultados locales:', error);
-      
-      // Si falla la API, devolver solo resultados locales
-      const startIndex = page * this.PAGE_SIZE;
-      const endIndex = startIndex + this.PAGE_SIZE;
-      
-      return {
-        results: localResults.results.slice(startIndex, endIndex),
-        total: localResults.total,
-        hasMore: endIndex < localResults.total,
-        source: 'local' as const
-      };
+      if (cachedResults) {
+        const startIndex = page * this.PAGE_SIZE;
+        const endIndex = startIndex + this.PAGE_SIZE;
+        
+        return {
+          results: cachedResults.slice(startIndex, endIndex),
+          total: cachedResults.length,
+          hasMore: endIndex < cachedResults.length,
+          source: 'hybrid' as const
+        };
+      } else {
+        // Si no hay cache, hacer búsqueda desde cero (fallback)
+        return this.search(query, 0);
+      }
     }
   }
 
   /**
-   * Búsqueda en Homebrew API
+   * Buscar en la API de Homebrew
    */
   private static async searchHomebrew(query: string): Promise<SearchableApp[]> {
     const cacheKey = `api-${query}`;
@@ -228,6 +262,7 @@ export class HybridSearchService {
    */
   static clearCache(): void {
     this.cache.clear();
+    this.combinedResultsCache.clear();
     LocalSearchService.clearCache();
   }
 }

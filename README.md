@@ -221,7 +221,153 @@ colors: {
 }
 ```
 
-## 🚀 Despliegue
+## � Añadir Aplicaciones Custom
+
+### ¿Qué son las Aplicaciones Custom?
+
+Las aplicaciones **custom** son herramientas que no están disponibles en Homebrew pero que son esenciales para el desarrollo en macOS. Ejemplos incluyen:
+- **Oh My Zsh** - Framework para terminal Zsh
+- **Xcode Command Line Tools** - Herramientas de desarrollo de Apple
+- **Node Version Manager (nvm)** - Gestor de versiones de Node.js
+- **Rust Toolchain** - Instalador de Rust
+- **Powerlevel10k** - Tema avanzado para terminal
+
+### Cómo Añadir una Nueva Aplicación Custom
+
+#### 1. Editar el Archivo de Configuración
+
+Abre `src/data/apps.ts` y añade tu aplicación en el array `customApps`:
+
+```typescript
+{
+  id: 'mi-herramienta-custom',           // ID único (kebab-case)
+  name: 'Mi Herramienta Custom',         // Nombre visible
+  description: 'Descripción detallada de la herramienta', // Descripción
+  homepage: 'https://mi-herramienta.com', // URL oficial (opcional)
+  version: 'latest',                     // Versión
+  installType: 'custom' as const,       // SIEMPRE 'custom'
+  command: 'curl -sSL https://install.sh | bash', // Comando de instalación
+  category: 'custom',                    // SIEMPRE 'custom'
+  source: 'predefined',                  // SIEMPRE 'predefined'
+  isSpecial: true,                       // SIEMPRE true para custom apps
+  architecture: {                       // Soporte de arquitectura
+    arm64: true,                         // ¿Funciona en Apple Silicon?
+    intel: true                          // ¿Funciona en Intel?
+  }
+}
+```
+
+#### 2. Tipos de Comandos de Instalación
+
+**Descarga e instalación directa:**
+```typescript
+command: 'curl -fsSL https://get.docker.com | sh'
+```
+
+**Instalación con Git:**
+```typescript
+command: 'git clone https://github.com/user/repo.git ~/.local/repo'
+```
+
+**Instalador específico de macOS:**
+```typescript
+command: 'mas install 497799835'  // Mac App Store
+```
+
+**Script personalizado:**
+```typescript
+command: 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+```
+
+**Múltiples comandos (separados por &&):**
+```typescript
+command: 'mkdir -p ~/.config && curl -o ~/.config/app.conf https://example.com/config'
+```
+
+#### 3. Configurar Soporte de Arquitectura
+
+Define correctamente el soporte de arquitectura:
+
+```typescript
+// App universal (funciona en ambas)
+architecture: { arm64: true, intel: true }
+
+// Solo Apple Silicon
+architecture: { arm64: true, intel: false }
+
+// Solo Intel (apps legacy)
+architecture: { arm64: false, intel: true }
+
+// Desconocido (será detectado automáticamente)
+architecture: { arm64: true, intel: true }  // Asume universal
+```
+
+#### 4. Ejemplo Completo
+
+```typescript
+{
+  id: 'starship',
+  name: 'Starship Cross-Shell Prompt',
+  description: 'Prompt minimalista, rápido e infinitamente personalizable para cualquier shell',
+  homepage: 'https://starship.rs',
+  version: 'latest',
+  installType: 'custom' as const,
+  command: 'curl -sS https://starship.rs/install.sh | sh',
+  category: 'custom',
+  source: 'predefined',
+  isSpecial: true,
+  architecture: {
+    arm64: true,
+    intel: true
+  }
+}
+```
+
+### 🧪 Testing de Aplicaciones Custom
+
+Después de añadir una aplicación custom, ejecuta los tests para verificar:
+
+```bash
+# Ejecutar tests específicos de custom apps
+npm test -- --testNamePattern="custom"
+
+# Verificar que la app aparece en búsquedas
+npm test -- LocalSearchService.custom.test.ts
+```
+
+### ✅ Checklist para Aplicaciones Custom
+
+- [ ] **ID único** - No conflicto con apps existentes
+- [ ] **Comando válido** - Probado en macOS real
+- [ ] **Descripción clara** - Explica qué hace la herramienta
+- [ ] **Arquitectura correcta** - ARM64/Intel según corresponda
+- [ ] **Homepage válida** - URL oficial de la herramienta
+- [ ] **Tests pasando** - Verificar con `npm test`
+
+### 🔍 Apps Custom Incluidas
+
+El proyecto incluye **8 aplicaciones custom** esenciales:
+
+| Aplicación | Descripción | Comando |
+|------------|-------------|---------|
+| **Oh My Zsh** | Framework para Zsh con plugins | `curl` install script |
+| **Xcode Tools** | Herramientas de desarrollo Apple | `xcode-select --install` |
+| **Node Version Manager** | Gestor de versiones Node.js | `curl` + bash installer |
+| **Powerlevel10k** | Tema avanzado para Zsh | `git clone` theme |
+| **Rust Toolchain** | Instalador oficial de Rust | `rustup` installer |
+| **Deno Runtime** | Runtime moderno JS/TS | `curl` + shell installer |
+| **Bun Runtime** | Runtime ultra-rápido JS/TS | `curl` + bash installer |
+| **Xcode (Completo)** | IDE completo de Apple | `mas install` command |
+
+### 💡 Tips y Mejores Prácticas
+
+1. **Comandos seguros**: Siempre usa `https://` y scripts oficiales
+2. **Testing**: Prueba los comandos manualmente antes de añadirlos
+3. **Documentación**: Incluye homepage para que usuarios puedan leer más
+4. **Arquitectura**: Verifica compatibilidad en ambas arquitecturas
+5. **Categorización**: Usa categoría 'custom' para consistencia
+
+## �🚀 Despliegue
 
 ### GitHub Pages (Automático)
 La aplicación se despliega automáticamente a GitHub Pages:
