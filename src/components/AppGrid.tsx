@@ -18,7 +18,7 @@ const AppCard = ({ app, isSelected, onToggle }: AppCardProps) => {
     
     switch (app.installType) {
       case 'brew':
-        return <span className={`${badgeClasses} bg-blue-100 text-blue-800`}>brew</span>;
+        return <span className={`${badgeClasses} bg-primary-100 text-primary-800`}>brew</span>;
       case 'brew-cask':
         return <span className={`${badgeClasses} bg-green-100 text-green-800`}>brew cask</span>;
       case 'curl-script':
@@ -131,7 +131,7 @@ export const AppGrid = ({ apps, selectedApps, onToggleApp }: AppGridProps) => {
           <h2 className="text-xl font-semibold text-gray-800">
             Aplicaciones en esta categoría
           </h2>
-          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+          <div className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">
             {selectedInCategory} de {totalInCategory} seleccionadas
           </div>
         </div>

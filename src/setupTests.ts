@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 
 // Mock URL methods for JSDOM environment
-Object.defineProperty(global, 'URL', {
+Object.defineProperty(globalThis, 'URL', {
   value: {
-    ...global.URL,
+    ...globalThis.URL,
     createObjectURL: jest.fn(() => 'blob:mock-url'),
     revokeObjectURL: jest.fn(),
   },

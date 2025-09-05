@@ -1,4 +1,5 @@
 import type { SearchableApp } from '../types/api';
+import { ArchitectureDetectionService } from './ArchitectureDetectionService';
 
 // Base de datos local estática para evitar problemas de API
 const LOCAL_PACKAGES: SearchableApp[] = [
@@ -11,25 +12,25 @@ const LOCAL_PACKAGES: SearchableApp[] = [
   { id: 'curl', name: 'curl', description: 'Herramienta para transferir datos', homepage: 'https://curl.se', version: 'latest', installType: 'brew', command: 'brew install curl', category: 'Utilities', source: 'homebrew' },
 
   // Development Tools - Apps
-  { id: 'vscode', name: 'Visual Studio Code', description: 'Editor de código fuente', homepage: 'https://code.visualstudio.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask visual-studio-code', category: 'Development', source: 'homebrew' },
-  { id: 'docker', name: 'Docker Desktop', description: 'Plataforma de contenedores', homepage: 'https://docker.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask docker', category: 'Development', source: 'homebrew' },
-  { id: 'postman', name: 'Postman', description: 'Plataforma para desarrollo de APIs', homepage: 'https://postman.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask postman', category: 'Development', source: 'homebrew' },
-  { id: 'github-desktop', name: 'GitHub Desktop', description: 'Cliente de Git con interfaz gráfica', homepage: 'https://desktop.github.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask github', category: 'Development', source: 'homebrew' },
-  { id: 'sourcetree', name: 'Sourcetree', description: 'Cliente Git visual', homepage: 'https://sourcetreeapp.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask sourcetree', category: 'Development', source: 'homebrew' },
+  { id: 'vscode', name: 'Visual Studio Code', description: 'Editor de código fuente', homepage: 'https://code.visualstudio.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask visual-studio-code', category: 'Development', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'docker', name: 'Docker Desktop', description: 'Plataforma de contenedores', homepage: 'https://docker.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask docker', category: 'Development', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'postman', name: 'Postman', description: 'Plataforma para desarrollo de APIs', homepage: 'https://postman.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask postman', category: 'Development', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'github-desktop', name: 'GitHub Desktop', description: 'Cliente de Git con interfaz gráfica', homepage: 'https://desktop.github.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask github', category: 'Development', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'sourcetree', name: 'Sourcetree', description: 'Cliente Git visual', homepage: 'https://sourcetreeapp.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask sourcetree', category: 'Development', source: 'homebrew', architecture: { arm64: false, intel: true } },
 
   // Browsers
-  { id: 'chrome', name: 'Google Chrome', description: 'Navegador web de Google', homepage: 'https://chrome.google.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask google-chrome', category: 'Browsers', source: 'homebrew' },
-  { id: 'firefox', name: 'Mozilla Firefox', description: 'Navegador web de Mozilla', homepage: 'https://firefox.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask firefox', category: 'Browsers', source: 'homebrew' },
-  { id: 'safari', name: 'Safari Technology Preview', description: 'Versión preview de Safari', homepage: 'https://developer.apple.com/safari/', version: 'latest', installType: 'brew-cask', command: 'brew install --cask safari-technology-preview', category: 'Browsers', source: 'homebrew' },
-  { id: 'edge', name: 'Microsoft Edge', description: 'Navegador web de Microsoft', homepage: 'https://microsoft.com/edge', version: 'latest', installType: 'brew-cask', command: 'brew install --cask microsoft-edge', category: 'Browsers', source: 'homebrew' },
+  { id: 'chrome', name: 'Google Chrome', description: 'Navegador web de Google', homepage: 'https://chrome.google.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask google-chrome', category: 'Browsers', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'firefox', name: 'Mozilla Firefox', description: 'Navegador web de Mozilla', homepage: 'https://firefox.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask firefox', category: 'Browsers', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'safari', name: 'Safari Technology Preview', description: 'Versión preview de Safari', homepage: 'https://developer.apple.com/safari/', version: 'latest', installType: 'brew-cask', command: 'brew install --cask safari-technology-preview', category: 'Browsers', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'edge', name: 'Microsoft Edge', description: 'Navegador web de Microsoft', homepage: 'https://microsoft.com/edge', version: 'latest', installType: 'brew-cask', command: 'brew install --cask microsoft-edge', category: 'Browsers', source: 'homebrew', architecture: { arm64: true, intel: true } },
 
   // Communication
-  { id: 'slack', name: 'Slack', description: 'Plataforma de comunicación empresarial', homepage: 'https://slack.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask slack', category: 'Communication', source: 'homebrew' },
-  { id: 'discord', name: 'Discord', description: 'Plataforma de chat y voz', homepage: 'https://discord.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask discord', category: 'Communication', source: 'homebrew' },
-  { id: 'telegram', name: 'Telegram', description: 'Aplicación de mensajería', homepage: 'https://telegram.org', version: 'latest', installType: 'brew-cask', command: 'brew install --cask telegram', category: 'Communication', source: 'homebrew' },
-  { id: 'zoom', name: 'Zoom', description: 'Plataforma de videoconferencias', homepage: 'https://zoom.us', version: 'latest', installType: 'brew-cask', command: 'brew install --cask zoom', category: 'Communication', source: 'homebrew' },
-  { id: 'teams', name: 'Microsoft Teams', description: 'Plataforma de colaboración', homepage: 'https://teams.microsoft.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask microsoft-teams', category: 'Communication', source: 'homebrew' },
-  { id: 'skype', name: 'Skype', description: 'Servicio de videollamadas', homepage: 'https://skype.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask skype', category: 'Communication', source: 'homebrew' },
+  { id: 'slack', name: 'Slack', description: 'Plataforma de comunicación empresarial', homepage: 'https://slack.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask slack', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'discord', name: 'Discord', description: 'Plataforma de chat y voz', homepage: 'https://discord.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask discord', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'telegram', name: 'Telegram', description: 'Aplicación de mensajería', homepage: 'https://telegram.org', version: 'latest', installType: 'brew-cask', command: 'brew install --cask telegram', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'zoom', name: 'Zoom', description: 'Plataforma de videoconferencias', homepage: 'https://zoom.us', version: 'latest', installType: 'brew-cask', command: 'brew install --cask zoom', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'teams', name: 'Microsoft Teams', description: 'Plataforma de colaboración', homepage: 'https://teams.microsoft.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask microsoft-teams', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
+  { id: 'skype', name: 'Skype', description: 'Servicio de videollamadas', homepage: 'https://skype.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask skype', category: 'Communication', source: 'homebrew', architecture: { arm64: true, intel: true } },
 
   // Media
   { id: 'spotify', name: 'Spotify', description: 'Servicio de streaming de música', homepage: 'https://spotify.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask spotify', category: 'Media', source: 'homebrew' },
@@ -101,14 +102,17 @@ export class LocalSearchService {
     // Guardar en cache
     this.cache.set(normalizedQuery, matches);
 
+    // Enrich with architecture info if missing
+    const enrichedMatches = this.enrichWithArchitecture(matches);
+
     // Paginar resultados
     const startIndex = page * this.PAGE_SIZE;
     const endIndex = startIndex + this.PAGE_SIZE;
 
     return {
-      results: matches.slice(startIndex, endIndex),
-      total: matches.length,
-      hasMore: endIndex < matches.length
+      results: enrichedMatches.slice(startIndex, endIndex),
+      total: enrichedMatches.length,
+      hasMore: endIndex < enrichedMatches.length
     };
   }
 
@@ -160,6 +164,34 @@ export class LocalSearchService {
    */
   static clearCache(): void {
     this.cache.clear();
+  }
+
+  /**
+   * Enrich apps with architecture information if missing
+   */
+  private static enrichWithArchitecture(apps: SearchableApp[]): SearchableApp[] {
+    return apps.map(app => {
+      // If app already has architecture info, keep it
+      if (app.architecture) {
+        return app;
+      }
+
+      // Try to detect architecture support
+      const architectureSupport = ArchitectureDetectionService.getArchitectureSupport(
+        app.id,
+        app.name,
+        app.installType
+      );
+
+      if (architectureSupport) {
+        return {
+          ...app,
+          architecture: architectureSupport
+        };
+      }
+
+      return app;
+    });
   }
 }
 

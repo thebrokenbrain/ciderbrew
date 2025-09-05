@@ -103,6 +103,10 @@ export interface SearchableApp {
   isSelected?: boolean;
   isSpecial?: boolean;
   icon?: string;
+  architecture?: {
+    arm64?: boolean;
+    intel?: boolean;
+  };
 }
 
 export interface SearchResult {

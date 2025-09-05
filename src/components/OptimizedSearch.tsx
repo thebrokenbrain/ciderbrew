@@ -23,12 +23,14 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
   const [hasMore, setHasMore] = useState(false);
   const [totalResults, setTotalResults] = useState(0);
   const [searchSource, setSearchSource] = useState<'local' | 'api' | 'hybrid'>('local');
+  const [isSearching, setIsSearching] = useState(false);
   
   const debouncedQuery = useDebounce(query, 500);
 
   // Memoizar la búsqueda para evitar re-renderizados
   React.useEffect(() => {
     const performSearch = async () => {
+      setIsSearching(true);
       onLoading(true);
       
       try {
@@ -38,13 +40,14 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
         setCurrentPage(0);
         setAllResults(results.results);
         setSearchSource(results.source);
-        onLoading(false);
       } catch (error) {
         console.error('Error en búsqueda:', error);
         setAllResults([]);
         setHasMore(false);
         setTotalResults(0);
         setSearchSource('local');
+      } finally {
+        setIsSearching(false);
         onLoading(false);
       }
     };
@@ -70,9 +73,10 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
   }, []);
 
   const loadMore = useCallback(async () => {
-    if (!hasMore) return;
+    if (!hasMore || isSearching) return;
     
     const nextPage = currentPage + 1;
+    setIsSearching(true);
     onLoading(true);
     
     try {
@@ -82,32 +86,37 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
       
       // Agregar nuevos resultados a los existentes
       setAllResults(prev => [...prev, ...results.results]);
-      onLoading(false);
     } catch (error) {
       console.error('Error cargando más resultados:', error);
+    } finally {
+      setIsSearching(false);
       onLoading(false);
     }
-  }, [debouncedQuery, currentPage, hasMore, onLoading]);
+  }, [debouncedQuery, currentPage, hasMore, isSearching, onLoading]);
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Barra de búsqueda simple */}
+      {/* Barra de búsqueda con indicador de carga */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i className="fas fa-search text-blue-400"></i>
+          {isSearching ? (
+            <i className="fas fa-spinner fa-spin text-primary-500 text-sm"></i>
+          ) : (
+            <i className="fas fa-search text-primary-400"></i>
+          )}
         </div>
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           placeholder={placeholder}
-          className="block w-full pl-10 pr-10 py-3 border border-blue-200 rounded-xl 
-                   focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          className="block w-full pl-10 pr-10 py-3 border border-primary-200 rounded-xl 
+                   focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    bg-white/80 backdrop-blur-sm text-gray-900 placeholder-gray-500
                    transition-all duration-200 hover:bg-white/90
                    text-sm md:text-base"
         />
-        {query && (
+        {query && !isSearching && (
           <button
             onClick={handleClear}
             className="absolute inset-y-0 right-0 pr-3 flex items-center
@@ -116,6 +125,14 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
           >
             <i className="fas fa-times"></i>
           </button>
+        )}
+        {isSearching && (
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <div className="w-4 h-4">
+              <div className="w-full h-full rounded-full border-2 border-primary-200"></div>
+              <div className="absolute top-0 left-0 w-full h-full rounded-full border-2 border-transparent border-t-primary-500 animate-spin"></div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -126,7 +143,7 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
             <span>
               {totalResults} resultado{totalResults !== 1 ? 's' : ''} encontrado{totalResults !== 1 ? 's' : ''}
             </span>
-            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">
+            <span className="text-xs px-2 py-1 rounded-full bg-primary-100 text-primary-600">
               {searchSource === 'local' && '📦 Local'}
               {searchSource === 'api' && '🌐 Homebrew'}
               {searchSource === 'hybrid' && '🔄 Híbrido'}
@@ -135,7 +152,7 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
           {hasMore && (
             <button
               onClick={loadMore}
-              className="text-blue-500 hover:text-blue-600 underline"
+              className="text-primary-500 hover:text-primary-600 underline"
             >
               Cargar más
             </button>
@@ -151,7 +168,7 @@ const OptimizedSearch: React.FC<OptimizedSearchProps> = ({
             <button 
               key={suggestion}
               onClick={() => setQuery(suggestion)}
-              className="text-blue-500 hover:text-blue-600 underline"
+              className="text-primary-500 hover:text-primary-600 underline"
             >
               {suggestion}
             </button>

@@ -44,6 +44,17 @@ function App() {
       return;
     }
     setShowScriptSection(true);
+    
+    // Scroll to script section after it's rendered
+    setTimeout(() => {
+      const scriptSection = document.getElementById('script-section');
+      if (scriptSection) {
+        scriptSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100);
   };
 
   const handleCloseScript = () => {
@@ -51,7 +62,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600">
+    <div className="min-h-screen bg-gradient-to-br from-primary-400 via-primary-500 to-secondary-700">{/* Changed from blue to primary/secondary browns */}
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-7xl">
         {/* Header */}
         <Header 
@@ -62,12 +73,12 @@ function App() {
         {/* Main Content */}
         <main className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
           {/* Action Bar */}
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-4 sm:px-6 py-4">
+          <div className="bg-gradient-to-r from-primary-50 to-primary-100 border-b border-primary-200 px-4 sm:px-6 py-4">{/* Changed from blue to primary browns */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               {/* Selection Info */}
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  <i className="fas fa-check-circle text-blue-500"></i>
+                  <i className="fas fa-check-circle text-primary-600"></i>{/* Changed from blue to primary brown */}
                   <span className="text-sm font-medium text-gray-700">
                     {count} aplicación{count !== 1 ? 'es' : ''} seleccionada{count !== 1 ? 's' : ''}
                   </span>
@@ -91,7 +102,7 @@ function App() {
                     px-4 py-2 rounded-lg font-medium text-sm flex items-center justify-center space-x-2
                     transition-all duration-200
                     ${count > 0
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
+                      ? 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg'
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }
                   `}
@@ -99,7 +110,7 @@ function App() {
                   <i className="fas fa-code text-sm"></i>
                   <span>Generar Script</span>
                   {count > 0 && (
-                    <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                    <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
                       {count}
                     </span>
                   )}
@@ -119,11 +130,13 @@ function App() {
 
         {/* Script Section */}
         {showScriptSection && (
-          <ScriptSection
-            selectedApps={getSelectedApps()}
-            onClose={handleCloseScript}
-            onToast={addToast}
-          />
+          <div id="script-section">
+            <ScriptSection
+              selectedApps={getSelectedApps()}
+              onClose={handleCloseScript}
+              onToast={addToast}
+            />
+          </div>
         )}
 
         {/* Toast Container */}

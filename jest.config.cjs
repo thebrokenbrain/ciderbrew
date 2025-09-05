@@ -4,6 +4,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(png|jpg|jpeg|gif|svg|ico)$': '<rootDir>/src/__mocks__/fileMock.js',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -25,16 +26,12 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/hooks/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/services/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/components/__tests__/Header.test.tsx'
+    '<rootDir>/src/components/__tests__/**/*.{ts,tsx}'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true
-      }
+      tsconfig: './tsconfig.test.json'
     }],
   },
   testEnvironmentOptions: {

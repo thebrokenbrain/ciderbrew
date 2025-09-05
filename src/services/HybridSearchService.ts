@@ -1,5 +1,6 @@
 import type { SearchableApp } from '../types/api';
 import { LocalSearchService } from './LocalSearchService';
+import { ArchitectureDetectionService } from './ArchitectureDetectionService';
 
 export class HybridSearchService {
   private static cache = new Map<string, SearchableApp[]>();
@@ -148,7 +149,7 @@ export class HybridSearchService {
    * Convertir formula de Homebrew a SearchableApp
    */
   private static formulaToSearchableApp(formula: any): SearchableApp {
-    return {
+    const app: SearchableApp = {
       id: formula.name,
       name: formula.name,
       description: formula.desc || 'Herramienta de línea de comandos',
@@ -159,6 +160,18 @@ export class HybridSearchService {
       category: this.guessCategory(formula.name, formula.desc || ''),
       source: 'homebrew'
     };
+
+    // Add architecture support information
+    const architectureSupport = ArchitectureDetectionService.getArchitectureSupport(
+      formula.name, 
+      formula.name, 
+      'brew'
+    );
+    if (architectureSupport) {
+      app.architecture = architectureSupport;
+    }
+
+    return app;
   }
 
   /**
@@ -166,7 +179,7 @@ export class HybridSearchService {
    */
   private static caskToSearchableApp(cask: any): SearchableApp {
     const name = Array.isArray(cask.name) ? cask.name[0] : cask.name;
-    return {
+    const app: SearchableApp = {
       id: cask.token,
       name: name || cask.token,
       description: cask.desc || 'Aplicación para macOS',
@@ -177,6 +190,18 @@ export class HybridSearchService {
       category: this.guessCategory(name || cask.token, cask.desc || ''),
       source: 'homebrew'
     };
+
+    // Add architecture support information
+    const architectureSupport = ArchitectureDetectionService.getArchitectureSupport(
+      cask.token, 
+      name || cask.token, 
+      'brew-cask'
+    );
+    if (architectureSupport) {
+      app.architecture = architectureSupport;
+    }
+
+    return app;
   }
 
   /**

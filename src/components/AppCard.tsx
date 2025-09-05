@@ -12,6 +12,23 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
     onSelect(!app.isSelected);
   };
 
+  const handleHomebrewClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the card selection
+    const homebrewUrl = getHomebrewUrl(app);
+    if (homebrewUrl) {
+      window.open(homebrewUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const getHomebrewUrl = (app: SearchableApp): string | null => {
+    if (app.installType === 'brew-cask') {
+      return `https://formulae.brew.sh/cask/${app.id}`;
+    } else if (app.installType === 'brew') {
+      return `https://formulae.brew.sh/formula/${app.id}`;
+    }
+    return null;
+  };
+
   const getIconForApp = (appName: string, category: string): string => {
     const name = appName.toLowerCase();
     
@@ -54,7 +71,7 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
 
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
-      case 'browsers': return 'text-blue-500';
+      case 'browsers': return 'text-primary-500';
       case 'development': return 'text-green-500';
       case 'media': return 'text-purple-500';
       case 'communication': return 'text-indigo-500';
@@ -64,7 +81,7 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
       case 'games': return 'text-orange-500';
       case 'database': return 'text-yellow-500';
       case 'terminal': return 'text-gray-700';
-      default: return 'text-blue-400';
+      default: return 'text-primary-400';
     }
   };
 
@@ -73,7 +90,7 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
       case 'brew':
         return { label: 'CLI', color: 'bg-green-100 text-green-700' };
       case 'brew-cask':
-        return { label: 'APP', color: 'bg-blue-100 text-blue-700' };
+        return { label: 'APP', color: 'bg-primary-100 text-primary-700' };
       default:
         return { label: 'PKG', color: 'bg-gray-100 text-gray-700' };
     }
@@ -89,8 +106,8 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
         relative bg-white/80 backdrop-blur-sm rounded-xl p-3 border-2 
         transition-all duration-200 cursor-pointer group hover:shadow-lg
         ${app.isSelected 
-          ? 'border-blue-500 bg-blue-50/80 shadow-md' 
-          : 'border-blue-100 hover:border-blue-300'
+          ? 'border-primary-500 bg-primary-50/80 shadow-md' 
+          : 'border-primary-100 hover:border-primary-300'
         }
         ${className}
       `}
@@ -109,8 +126,8 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
         absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center
         transition-all duration-200
         ${app.isSelected
-          ? 'bg-blue-500 border-blue-500'
-          : 'border-gray-300 group-hover:border-blue-400'
+          ? 'bg-primary-500 border-primary-500'
+          : 'border-gray-300 group-hover:border-primary-400'
         }
       `}>
         {app.isSelected && (
@@ -122,7 +139,7 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
       <div className="flex justify-center mb-2">
         <div className={`
           w-10 h-10 rounded-lg flex items-center justify-center
-          ${app.isSelected ? 'bg-blue-100' : 'bg-gray-100 group-hover:bg-blue-50'}
+          ${app.isSelected ? 'bg-primary-100' : 'bg-gray-100 group-hover:bg-primary-50'}
           transition-colors duration-200
         `}>
           <i className={`${icon} ${categoryColor} text-lg`}></i>
@@ -155,6 +172,22 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
         </div>
       )}
 
+      {/* Architecture support */}
+      {app.architecture && (app.architecture.arm64 || app.architecture.intel) && (
+        <div className="mt-1 flex justify-center space-x-1">
+          {app.architecture.arm64 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800">
+              ARM64
+            </span>
+          )}
+          {app.architecture.intel && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+              Intel
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Special badge for featured apps */}
       {app.isSpecial && (
         <div className="absolute top-2 left-2">
@@ -167,6 +200,21 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
         <div className="absolute bottom-2 left-2">
           <i className="fas fa-cube text-orange-500 text-xs" title="Homebrew Package"></i>
         </div>
+      )}
+
+      {/* Homebrew link button */}
+      {app.source === 'homebrew' && getHomebrewUrl(app) && (
+        <button
+          onClick={handleHomebrewClick}
+          className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm 
+                   border border-gray-200 flex items-center justify-center
+                   hover:bg-orange-50 hover:border-orange-300 transition-all duration-200
+                   shadow-sm hover:shadow-md group/link"
+          title={`Ver en Homebrew: ${app.name}`}
+          aria-label={`Abrir página de ${app.name} en Homebrew`}
+        >
+          <i className="fab fa-github-alt text-gray-600 group-hover/link:text-orange-600 text-xs"></i>
+        </button>
       )}
     </div>
   );

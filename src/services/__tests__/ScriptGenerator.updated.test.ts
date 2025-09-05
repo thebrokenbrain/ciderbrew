@@ -95,7 +95,7 @@ describe('ScriptGenerator - Updated', () => {
     // Mock DOM methods for testing
     beforeEach(() => {
       // Mock document methods
-      global.document = {
+      globalThis.document = {
         createElement: jest.fn(() => ({
           href: '',
           download: '',
@@ -109,7 +109,7 @@ describe('ScriptGenerator - Updated', () => {
         }
       } as any;
 
-      global.URL = {
+      globalThis.URL = {
         createObjectURL: jest.fn(() => 'mock-url'),
         revokeObjectURL: jest.fn()
       } as any;
@@ -123,13 +123,13 @@ describe('ScriptGenerator - Updated', () => {
 
     it('should handle copyToClipboard', async () => {
       // Mock navigator.clipboard
-      global.navigator = {
+      globalThis.navigator = {
         clipboard: {
           writeText: jest.fn().mockResolvedValue(undefined)
         }
       } as any;
 
-      global.window = {
+      globalThis.window = {
         isSecureContext: true
       } as any;
 

@@ -47,7 +47,7 @@ const FeaturedApps: React.FC<FeaturedAppsProps> = ({
           {Array.from({ length: 12 }).map((_, index) => (
             <div
               key={index}
-              className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-blue-100
+              className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-primary-100
                        animate-pulse"
             >
               <div className="w-8 h-8 bg-gray-200 rounded-lg mb-3 mx-auto"></div>

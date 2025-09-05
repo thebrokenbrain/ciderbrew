@@ -1,3 +1,5 @@
+import iconImage from '../assets/icon.png';
+
 interface HeaderProps {
   selectedCount?: number;
   totalApps?: number;
@@ -9,8 +11,12 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
   return (
     <header className="text-center mb-8 sm:mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
       <div className="text-white">
-        <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">
-          <i className="fas fa-cogs"></i>
+        <div className="flex justify-center mb-3 sm:mb-4">
+          <img 
+            src={iconImage} 
+            alt="macOS Setup Assistant" 
+            className="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain"
+          />
         </div>
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-light mb-3 sm:mb-4">
           macOS Setup Assistant
@@ -31,7 +37,7 @@ export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
         
         {!hasSelections && totalApps > 0 && (
           <div className="mt-4 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
-            <i className="fa fa-info-circle text-blue-300"></i>
+            <i className="fa fa-info-circle text-primary-300"></i>
             <span className="opacity-90">
               {totalApps} aplicaciones disponibles para seleccionar
             </span>

@@ -139,12 +139,12 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
             </div>
             <p className="text-2xl font-bold text-green-600">{brewApps.length}</p>
           </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <i className="fas fa-desktop text-blue-600"></i>
-              <span className="font-medium text-blue-800">Aplicaciones</span>
+              <i className="fas fa-desktop text-primary-600"></i>
+              <span className="font-medium text-primary-800">Aplicaciones</span>
             </div>
-            <p className="text-2xl font-bold text-blue-600">{caskApps.length}</p>
+            <p className="text-2xl font-bold text-primary-600">{caskApps.length}</p>
           </div>
         </div>
 
@@ -158,7 +158,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
               onClick={() => setScriptType('script')}
               className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'script'
-                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -169,7 +169,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
               onClick={() => setScriptType('commands')}
               className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'commands'
-                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -180,7 +180,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
               onClick={() => setScriptType('brewfile')}
               className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'brewfile'
-                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -200,7 +200,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
                   type="checkbox"
                   checked={scriptOptions.includeUpdates}
                   onChange={(e) => setScriptOptions(prev => ({ ...prev, includeUpdates: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span className="text-sm text-gray-700">Incluir actualizaciones</span>
               </label>
@@ -209,7 +209,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
                   type="checkbox"
                   checked={scriptOptions.includeCleanup}
                   onChange={(e) => setScriptOptions(prev => ({ ...prev, includeCleanup: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span className="text-sm text-gray-700">Incluir limpieza</span>
               </label>
@@ -218,7 +218,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
                   type="checkbox"
                   checked={scriptOptions.verboseOutput}
                   onChange={(e) => setScriptOptions(prev => ({ ...prev, verboseOutput: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span className="text-sm text-gray-700">Salida detallada</span>
               </label>
@@ -227,7 +227,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
                   type="checkbox"
                   checked={scriptOptions.skipConfirmations}
                   onChange={(e) => setScriptOptions(prev => ({ ...prev, skipConfirmations: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span className="text-sm text-gray-700">Sin confirmaciones</span>
               </label>
@@ -253,7 +253,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
               <button
                 onClick={downloadScript}
                 disabled={isGenerating || !generatedScript}
-                className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 disabled:opacity-50"
+                className="px-3 py-1 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded transition-colors duration-200 disabled:opacity-50"
               >
                 <i className="fas fa-download mr-1"></i>
                 Descargar

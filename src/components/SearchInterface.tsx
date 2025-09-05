@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import type { SearchableApp } from '../types/api';
 import OptimizedSearch from './OptimizedSearch';
 import AppCard from './AppCard';
+import SkeletonLoader from './SkeletonLoader';
 
 interface SearchInterfaceProps {
   onAppSelect: (app: SearchableApp, isSelected: boolean) => void;
@@ -51,19 +52,14 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
       {/* Indicador de carga */}
       {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <div className="flex items-center space-x-2 text-blue-600">
-            <i className="fas fa-spinner fa-spin"></i>
-            <span>Buscando...</span>
-          </div>
-        </div>
+        <SkeletonLoader count={8} />
       )}
 
       {/* Resultados */}
       {!isLoading && appsWithSelection.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-            <i className="fas fa-th-large mr-2 text-blue-500"></i>
+            <i className="fas fa-th-large mr-2 text-primary-500"></i>
             Resultados ({appsWithSelection.length})
           </h3>
           

@@ -5,7 +5,7 @@ import { LocalSearchService } from '../LocalSearchService';
 jest.mock('../LocalSearchService');
 
 // Mock fetch
-global.fetch = jest.fn();
+globalThis.fetch = jest.fn();
 
 describe('HybridSearchService', () => {
   beforeEach(() => {
@@ -99,7 +99,7 @@ describe('HybridSearchService', () => {
       });
 
       // Mock fetch failure
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      (globalThis.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       const result = await HybridSearchService.search('rare-app', 0);
       
@@ -127,7 +127,7 @@ describe('HybridSearchService', () => {
       });
 
       // Mock successful API responses
-      (global.fetch as jest.Mock)
+      (globalThis.fetch as jest.Mock)
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve([
@@ -156,7 +156,7 @@ describe('HybridSearchService', () => {
       
       expect(result.source).toBe('hybrid');
       expect(result.results.length).toBeGreaterThan(1);
-      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
     });
 
     it('should handle pagination correctly', async () => {
@@ -202,7 +202,7 @@ describe('HybridSearchService', () => {
       });
 
       // Mock API response with browser app
-      (global.fetch as jest.Mock)
+      (globalThis.fetch as jest.Mock)
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve([

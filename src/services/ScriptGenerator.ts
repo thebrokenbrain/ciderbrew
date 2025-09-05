@@ -43,7 +43,19 @@ show_error() {
 `;
   }
 
-  private static generateHomebrewInstallation(): string {
+  private static generateHomebrewInstallation(options: ScriptGenerationOptions): string {
+    const updateSection = options.includeUpdates ? `
+# Actualizar Homebrew
+show_progress "Actualizando Homebrew..."
+brew update
+${options.verboseOutput ? 'brew upgrade --verbose' : 'brew upgrade'}
+show_success "Homebrew actualizado"
+` : `
+# Actualizar Homebrew
+echo "Actualizando Homebrew..."
+brew update
+`;
+
     return `
 # Verificar e instalar Homebrew
 show_progress "Verificando Homebrew..."
@@ -61,10 +73,7 @@ if ! command -v brew &> /dev/null; then
 else
     echo "✅ Homebrew ya está instalado"
 fi
-
-# Actualizar Homebrew
-echo "Actualizando Homebrew..."
-brew update
+${updateSection}
 `;
   }
 
@@ -73,6 +82,7 @@ brew update
     const caskApps = apps.filter(app => app.installType === 'brew-cask');
 
     let script = '';
+    const verboseFlag = options.verboseOutput ? ' --verbose' : '';
 
     // Install CLI packages
     if (brewApps.length > 0) {
@@ -82,7 +92,7 @@ show_progress "Instalando herramientas de línea de comandos (${brewApps.length}
       brewApps.forEach(app => {
         script += `
 echo "  → Instalando ${app.name}..."
-if ${this.getInstallCommand(app)}; then
+if ${this.getInstallCommand(app)}${verboseFlag}; then
     show_success "${app.name} instalado"
 else
     show_error "No se pudo instalar ${app.name}"
@@ -99,7 +109,7 @@ show_progress "Instalando aplicaciones (${caskApps.length})..."`;
       caskApps.forEach(app => {
         script += `
 echo "  → Instalando ${app.name}..."
-if ${this.getInstallCommand(app)}; then
+if ${this.getInstallCommand(app)}${verboseFlag}; then
     show_success "${app.name} instalado"
 else
     show_error "No se pudo instalar ${app.name}"
@@ -177,7 +187,7 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     const script = [
       this.generateHeader(defaultOptions),
       this.generateProgressFunctions(),
-      this.generateHomebrewInstallation(),
+      this.generateHomebrewInstallation(defaultOptions),
       this.generatePackageInstallation(selectedApps, defaultOptions),
       this.generateCleanup(defaultOptions),
       this.generateFooter(selectedApps)

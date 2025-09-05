@@ -26,7 +26,7 @@ const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
       case 'warning':
         return `${baseStyles} bg-yellow-50 border-yellow-200 text-yellow-800`;
       case 'info':
-        return `${baseStyles} bg-blue-50 border-blue-200 text-blue-800`;
+        return `${baseStyles} bg-primary-50 border-primary-200 text-primary-800`;
       default:
         return `${baseStyles} bg-gray-50 border-gray-200 text-gray-800`;
     }
