@@ -1,5 +1,6 @@
 import type { SearchableApp } from '../types/api';
 import { ArchitectureDetectionService } from './ArchitectureDetectionService';
+import { appConfig } from '../data/apps';
 
 // Base de datos local estática para evitar problemas de API
 const LOCAL_PACKAGES: SearchableApp[] = [
@@ -55,6 +56,28 @@ const LOCAL_PACKAGES: SearchableApp[] = [
   { id: 'malwarebytes', name: 'Malwarebytes', description: 'Protección contra malware', homepage: 'https://malwarebytes.com', version: 'latest', installType: 'brew-cask', command: 'brew install --cask malwarebytes', category: 'Security', source: 'homebrew' }
 ];
 
+// Función para convertir aplicaciones de appConfig al formato SearchableApp
+function convertAppConfigToSearchableApps(): SearchableApp[] {
+  return appConfig.apps
+    .filter(app => app.installType === 'custom') // Solo aplicaciones custom
+    .map(app => ({
+      id: app.id,
+      name: app.name,
+      description: app.description,
+      homepage: '', // No tenemos homepage en nuestro formato
+      version: 'latest',
+      installType: 'custom' as const, // Forzar el tipo a 'custom'
+      command: app.command,
+      category: app.category,
+      source: 'predefined' as const,
+      isSpecial: app.isSpecial
+    }));
+}
+
+// Agregar aplicaciones custom al array local
+const CUSTOM_APPS = convertAppConfigToSearchableApps();
+const ALL_LOCAL_PACKAGES = [...LOCAL_PACKAGES, ...CUSTOM_APPS];
+
 export class LocalSearchService {
   private static cache = new Map<string, SearchableApp[]>();
   private static readonly PAGE_SIZE = 12;
@@ -84,7 +107,7 @@ export class LocalSearchService {
     }
 
     // Búsqueda simple en el array local
-    const matches = LOCAL_PACKAGES.filter(app => {
+    const matches = ALL_LOCAL_PACKAGES.filter(app => {
       const searchText = `${app.name} ${app.description} ${app.id}`.toLowerCase();
       return searchText.includes(normalizedQuery);
     });
@@ -120,7 +143,7 @@ export class LocalSearchService {
    * Obtener aplicaciones destacadas
    */
   static getFeatured(page = 0): { results: SearchableApp[]; total: number; hasMore: boolean } {
-    const featured = LOCAL_PACKAGES.slice(0, 24).map(app => ({
+    const featured = ALL_LOCAL_PACKAGES.slice(0, 24).map(app => ({
       ...app,
       isSpecial: true
     }));
@@ -139,7 +162,7 @@ export class LocalSearchService {
    * Obtener por categoría
    */
   static getByCategory(category: string, page = 0): { results: SearchableApp[]; total: number; hasMore: boolean } {
-    const matches = LOCAL_PACKAGES.filter(app => app.category === category);
+    const matches = ALL_LOCAL_PACKAGES.filter(app => app.category === category);
     
     const startIndex = page * this.PAGE_SIZE;
     const endIndex = startIndex + this.PAGE_SIZE;
@@ -155,7 +178,7 @@ export class LocalSearchService {
    * Obtener todas las categorías
    */
   static getCategories(): string[] {
-    const categories = new Set(LOCAL_PACKAGES.map(app => app.category));
+    const categories = new Set(ALL_LOCAL_PACKAGES.map(app => app.category));
     return Array.from(categories).sort();
   }
 

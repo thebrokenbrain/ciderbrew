@@ -96,13 +96,14 @@ export interface SearchableApp {
   description: string;
   homepage: string;
   version: string;
-  installType: 'brew' | 'brew-cask';
+  installType: 'brew' | 'brew-cask' | 'custom';
   command: string;
   category: string;
   source: 'homebrew' | 'predefined';
   isSelected?: boolean;
   isSpecial?: boolean;
   icon?: string;
+  postInstallNotes?: string;
   architecture?: {
     arm64?: boolean;
     intel?: boolean;

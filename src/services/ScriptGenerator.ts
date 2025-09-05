@@ -80,6 +80,7 @@ ${updateSection}
   private static generatePackageInstallation(apps: SearchableApp[], options: ScriptGenerationOptions): string {
     const brewApps = apps.filter(app => app.installType === 'brew');
     const caskApps = apps.filter(app => app.installType === 'brew-cask');
+    const customApps = apps.filter(app => app.installType === 'custom');
 
     let script = '';
     const verboseFlag = options.verboseOutput ? ' --verbose' : '';
@@ -118,6 +119,90 @@ fi`;
       });
     }
 
+    // Install custom applications
+    if (customApps.length > 0) {
+      script += this.generateCustomInstallation(customApps, options);
+    }
+
+    return script;
+  }
+
+  private static generateCustomInstallation(apps: SearchableApp[], options: ScriptGenerationOptions): string {
+    let script = `
+show_progress "Instalando aplicaciones personalizadas (${apps.length})..."`;
+
+    apps.forEach(app => {
+      script += `
+echo "  → Instalando ${app.name}..."
+echo "    ${app.description}"`;
+
+      // Special handling for different types of custom installations
+      if (app.id === 'xcode-tools') {
+        script += `
+if ! xcode-select --print-path &> /dev/null; then
+    ${app.command}
+    show_success "${app.name} instalado. Sigue las instrucciones en pantalla."
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else if (app.id === 'oh-my-zsh') {
+        script += `
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    ${app.command}
+    show_success "${app.name} instalado"
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else if (app.id === 'nvm') {
+        script += `
+if [ ! -d "$HOME/.nvm" ]; then
+    ${app.command}
+    show_success "${app.name} instalado"
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else if (app.id === 'rustup') {
+        script += `
+if ! command -v rustc &> /dev/null; then
+    ${app.command}
+    show_success "${app.name} instalado"
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else if (app.id === 'deno') {
+        script += `
+if ! command -v deno &> /dev/null; then
+    ${app.command}
+    show_success "${app.name} instalado"
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else if (app.id === 'bun') {
+        script += `
+if ! command -v bun &> /dev/null; then
+    ${app.command}
+    show_success "${app.name} instalado"
+else
+    echo "    ✅ ${app.name} ya está instalado"
+fi`;
+      } else {
+        // Generic custom installation
+        script += `
+if ${app.command}; then
+    show_success "${app.name} instalado"
+else
+    show_error "No se pudo instalar ${app.name}"
+    ${options.skipConfirmations ? '' : 'read -p "¿Continuar con la instalación? (y/n): " -n 1 -r; echo; [[ $REPLY =~ ^[Yy]$ ]] || exit 1'}
+fi`;
+      }
+
+      // Add post-install notes if available
+      if (app.postInstallNotes) {
+        script += `
+echo "    💡 ${app.postInstallNotes}"`;
+      }
+    });
+
     return script;
   }
 
@@ -134,6 +219,7 @@ show_success "Limpieza completada"
   private static generateFooter(apps: SearchableApp[]): string {
     const brewApps = apps.filter(app => app.installType === 'brew');
     const caskApps = apps.filter(app => app.installType === 'brew-cask');
+    const customApps = apps.filter(app => app.installType === 'custom');
 
     return `
 echo ""
@@ -142,10 +228,16 @@ echo "=================================================="
 echo "📦 Resumen de instalación:"
 echo "   • ${brewApps.length} herramientas de línea de comandos"
 echo "   • ${caskApps.length} aplicaciones"
+${customApps.length > 0 ? `echo "   • ${customApps.length} instalaciones personalizadas"` : ''}
 echo "   • Total: ${apps.length} paquetes"
 echo ""
 echo "📋 Aplicaciones instaladas:"
-${apps.map(app => `echo "   ✓ ${app.name} (${app.installType === 'brew' ? 'CLI' : 'APP'})"`).join('\n')}
+${apps.map(app => {
+  let type = 'CUSTOM';
+  if (app.installType === 'brew') type = 'CLI';
+  else if (app.installType === 'brew-cask') type = 'APP';
+  return `echo "   ✓ ${app.name} (${type})"`;
+}).join('\n')}
 echo ""
 echo "💡 Para verificar las instalaciones, ejecuta:"
 echo "   brew list --formula  # Herramientas CLI"
@@ -206,6 +298,7 @@ echo "✨ ¡Disfruta tu macOS configurado!"
 
     const brewApps = selectedApps.filter(app => app.installType === 'brew');
     const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
+    const customApps = selectedApps.filter(app => app.installType === 'custom');
 
     let commands = '# Comandos de instalación\n\n';
     
@@ -220,6 +313,14 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     if (caskApps.length > 0) {
       commands += '# Aplicaciones\n';
       caskApps.forEach(app => {
+        commands += `${app.command}  # ${app.name}\n`;
+      });
+      commands += '\n';
+    }
+
+    if (customApps.length > 0) {
+      commands += '# Instalaciones personalizadas\n';
+      customApps.forEach(app => {
         commands += `${app.command}  # ${app.name}\n`;
       });
     }
@@ -237,6 +338,7 @@ echo "✨ ¡Disfruta tu macOS configurado!"
 
     const brewApps = selectedApps.filter(app => app.installType === 'brew');
     const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
+    const customApps = selectedApps.filter(app => app.installType === 'custom');
 
     let brewfile = '# Brewfile generado por macOS Setup Assistant\n\n';
 
@@ -257,9 +359,21 @@ echo "✨ ¡Disfruta tu macOS configurado!"
         const packageName = app.command.replace('brew install --cask ', '');
         brewfile += `cask "${packageName}"  # ${app.name}\n`;
       });
+      brewfile += '\n';
     }
 
-    brewfile += '\n# Para instalar: brew bundle --file=Brewfile\n';
+    if (customApps.length > 0) {
+      brewfile += '# Aplicaciones personalizadas (instalar manualmente)\n';
+      customApps.forEach(app => {
+        brewfile += `# ${app.name}: ${app.command}\n`;
+      });
+      brewfile += '\n';
+    }
+
+    brewfile += '# Para instalar: brew bundle --file=Brewfile\n';
+    if (customApps.length > 0) {
+      brewfile += '# Nota: Las aplicaciones personalizadas deben instalarse manualmente\n';
+    }
 
     return brewfile;
   }

@@ -94,7 +94,7 @@ export class ArchitectureDetectionService {
   /**
    * Get architecture support for a given app
    */
-  static getArchitectureSupport(appId: string, appName: string, installType: 'brew' | 'brew-cask'): { arm64: boolean; intel: boolean } | undefined {
+  static getArchitectureSupport(appId: string, appName: string, installType: 'brew' | 'brew-cask' | 'custom'): { arm64: boolean; intel: boolean } | undefined {
     // First check our known database
     const knownSupport = this.ARCHITECTURE_DATABASE.get(appId);
     if (knownSupport) {
@@ -126,7 +126,7 @@ export class ArchitectureDetectionService {
   /**
    * Use heuristics to detect likely architecture support
    */
-  private static detectArchitectureByHeuristics(appId: string, appName: string, installType: 'brew' | 'brew-cask'): { arm64: boolean; intel: true } | undefined {
+  private static detectArchitectureByHeuristics(appId: string, appName: string, installType: 'brew' | 'brew-cask' | 'custom'): { arm64: boolean; intel: true } | undefined {
     const nameId = `${appId} ${appName}`.toLowerCase();
     
     // CLI tools (brew formula) - most support both architectures
@@ -158,6 +158,12 @@ export class ArchitectureDetectionService {
       }
       
       // Default for GUI apps - assume both unless known otherwise
+      return { arm64: true, intel: true };
+    }
+
+    // Custom installations - assume universal support by default
+    if (installType === 'custom') {
+      // Most modern custom installations support both architectures
       return { arm64: true, intel: true };
     }
 
