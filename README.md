@@ -7,6 +7,7 @@ Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tail
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.1-646CFF?logo=vite&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-46%20passing-green?logo=jest)
+![Mobile Responsive](https://img.shields.io/badge/Mobile-Responsive-green?logo=mobile)
 
 ## 🌟 Demo en Vivo
 
@@ -20,6 +21,7 @@ macOS Setup Assistant es una herramienta web que simplifica la configuración in
 - **🎯 Generar automáticamente** un script bash optimizado y personalizado
 - **📥 Descargar o copiar** el script para ejecutarlo en Terminal
 - **⚡ Automatizar** la instalación de todas tus aplicaciones favoritas con un solo comando
+- **📱 Usar desde cualquier dispositivo** - Completamente responsive y optimizado para móviles
 
 ### Flujo de uso:
 1. Navega por las **5 categorías** de aplicaciones (Desarrollo, Productividad, Multimedia, Utilidades, Configuración)
@@ -30,7 +32,15 @@ macOS Setup Assistant es una herramienta web que simplifica la configuración in
 
 ## 🏗️ Arquitectura de la Aplicación
 
-### 📋 Stack Tecnológico
+### � Responsive Design
+La aplicación está **completamente optimizada para móviles** con:
+- **Layouts adaptativos** que se reorganizan según el tamaño de pantalla
+- **Grid responsivo** de 2x2 en móvil para categorías de apps
+- **Botones touch-friendly** con área mínima de 44px
+- **Textos escalables** que se adaptan desde móvil hasta desktop
+- **Navegación intuitiva** optimizada para uso táctil
+
+### �📋 Stack Tecnológico
 - **React 19.1** - Biblioteca de interfaz de usuario con Concurrent Features
 - **TypeScript 5.0** - Tipado estático para JavaScript
 - **Vite 7.1** - Build tool moderno y ultrarrápido
@@ -121,6 +131,10 @@ npm run dev
 
 # La aplicación estará disponible en:
 # http://localhost:5173/macos-setup-assistant/
+# 
+# 📱 Prueba la versión móvil usando DevTools:
+# Chrome/Safari: F12 → Toggle Device Toolbar
+# Responsive design funciona en todas las resoluciones
 
 # Preview del build de producción
 npm run build && npm run preview
