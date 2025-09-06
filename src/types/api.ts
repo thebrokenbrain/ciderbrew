@@ -104,6 +104,7 @@ export interface SearchableApp {
   isSpecial?: boolean;
   icon?: string;
   postInstallNotes?: string;
+  deprecated?: boolean;
   architecture?: {
     arm64?: boolean;
     intel?: boolean;

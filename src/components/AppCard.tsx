@@ -88,11 +88,11 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
   const getInstallTypeInfo = (installType: string) => {
     switch (installType) {
       case 'brew':
-        return { label: 'CLI', color: 'bg-green-100 text-green-700' };
+        return { label: 'CLI', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' };
       case 'brew-cask':
-        return { label: 'APP', color: 'bg-primary-100 text-primary-700' };
+        return { label: 'APP', color: 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' };
       default:
-        return { label: 'PKG', color: 'bg-gray-100 text-gray-700' };
+        return { label: 'PKG', color: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' };
     }
   };
 
@@ -100,15 +100,25 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
   const categoryColor = getCategoryColor(app.category);
   const installInfo = getInstallTypeInfo(app.installType);
 
+  // Determine card background based on deprecation status
+  const getCardBackgroundClasses = () => {
+    if (app.deprecated) {
+      return app.isSelected 
+        ? 'border-red-500 bg-red-50/90 dark:bg-red-900/20 shadow-md' 
+        : 'border-red-300 bg-red-50/80 dark:bg-red-900/10 hover:border-red-400';
+    }
+    
+    return app.isSelected 
+      ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 shadow-md' 
+      : 'border-primary-100 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600';
+  };
+
   return (
     <div
       className={`
-        relative bg-white/80 backdrop-blur-sm rounded-xl p-3 border-2 
+        relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-3 border-2 
         transition-all duration-200 cursor-pointer group hover:shadow-lg
-        ${app.isSelected 
-          ? 'border-primary-500 bg-primary-50/80 shadow-md' 
-          : 'border-primary-100 hover:border-primary-300'
-        }
+        ${getCardBackgroundClasses()}
         ${className}
       `}
       onClick={handleClick}
@@ -138,21 +148,30 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
       {/* App icon */}
       <div className="flex justify-center mb-2">
         <div className={`
-          w-10 h-10 rounded-lg flex items-center justify-center
-          ${app.isSelected ? 'bg-primary-100' : 'bg-gray-100 group-hover:bg-primary-50'}
-          transition-colors duration-200
+          w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-200
+          ${app.isSelected 
+            ? 'bg-primary-100 dark:bg-primary-900/30' 
+            : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20'
+          }
         `}>
           <i className={`${icon} ${categoryColor} text-lg`}></i>
         </div>
       </div>
 
       {/* App name */}
-      <h4 className="font-medium text-gray-900 text-sm text-center mb-1 line-clamp-1">
+      <h4 className={`font-medium text-sm text-center mb-1 line-clamp-1 ${
+        app.deprecated ? 'text-red-700 dark:text-red-300' : 'text-gray-900 dark:text-white'
+      }`}>
         {app.name}
       </h4>
 
-      {/* Install type badge */}
-      <div className="flex justify-center mb-2">
+      {/* Install type badge and deprecated warning */}
+      <div className="flex flex-col items-center space-y-1 mb-2">
+        {app.deprecated && (
+          <span className="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
+            DEPRECATED
+          </span>
+        )}
         <span className={`
           px-2 py-1 rounded-full text-xs font-medium ${installInfo.color}
         `}>

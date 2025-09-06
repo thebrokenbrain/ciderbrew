@@ -20,7 +20,7 @@ export const Header = ({ selectedCount = 0, currentProfile, onShowSelectedApps }
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-warning-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
               <img 
                 src={iconPng} 
                 alt="macOS Setup Assistant" 
@@ -28,10 +28,10 @@ export const Header = ({ selectedCount = 0, currentProfile, onShowSelectedApps }
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-secondary-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 macOS Setup Brew Assistant
               </h1>
-              <p className="text-sm text-secondary-600 dark:text-secondary-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Tu asistente inteligente para configurar macOS con Homebrew
               </p>
             </div>
@@ -40,16 +40,11 @@ export const Header = ({ selectedCount = 0, currentProfile, onShowSelectedApps }
           <div className="flex items-center space-x-6">
             <ThemeToggle showLabel={false} size="md" />
             
-            <div className="hidden md:flex items-center space-x-2 text-sm text-secondary-500 dark:text-secondary-400">
-              <i className="fab fa-github"></i>
-              <span>v2.0.0</span>
-            </div>
-            
             {/* Profile indicator */}
             {currentProfile && (
-              <div className="flex items-center space-x-2 bg-accent-50 dark:bg-accent-900/20 px-3 py-1 rounded-full">
-                <i className="fas fa-user-cog text-accent-600 dark:text-accent-400"></i>
-                <span className="text-sm font-medium text-accent-700 dark:text-accent-300">
+              <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full">
+                <i className="fas fa-user-cog text-blue-600 dark:text-blue-400"></i>
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                   {currentProfile.name}
                 </span>
               </div>

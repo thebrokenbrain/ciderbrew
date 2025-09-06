@@ -192,7 +192,8 @@ export class HybridSearchService {
       installType: 'brew',
       command: `brew install ${formula.name}`,
       category: this.guessCategory(formula.name, formula.desc || ''),
-      source: 'homebrew'
+      source: 'homebrew',
+      deprecated: formula.deprecated || false
     };
 
     // Add architecture support information
@@ -222,7 +223,8 @@ export class HybridSearchService {
       installType: 'brew-cask',
       command: `brew install --cask ${cask.token}`,
       category: this.guessCategory(name || cask.token, cask.desc || ''),
-      source: 'homebrew'
+      source: 'homebrew',
+      deprecated: cask.deprecated || false
     };
 
     // Add architecture support information

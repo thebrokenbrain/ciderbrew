@@ -175,7 +175,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-primary-100 dark:from-secondary-900 dark:to-secondary-800 text-secondary-900 dark:text-white transition-all duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white transition-all duration-300">
       <div className="min-h-screen">
         {/* Header */}
         <Header 

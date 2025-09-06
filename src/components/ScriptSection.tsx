@@ -107,28 +107,31 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
   const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
 
   return (
-    <div className="mt-6 bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-4 sm:px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <i className="fas fa-code text-xl"></i>
-          <div>
-            <h2 className="text-lg font-semibold">Generador de Script</h2>
-            <p className="text-gray-300 text-sm">
-              {selectedApps.length} aplicación{selectedApps.length !== 1 ? 'es' : ''} seleccionada{selectedApps.length !== 1 ? 's' : ''}
-            </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-700 to-primary-800 dark:from-primary-800 dark:to-primary-900 text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <i className="fas fa-code text-xl"></i>
+              <div>
+                <h2 className="text-lg font-semibold">Generador de Script</h2>
+                <p className="text-gray-300 text-sm">
+                  {selectedApps.length} aplicación{selectedApps.length !== 1 ? 'es' : ''} seleccionada{selectedApps.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-300 hover:text-white transition-colors duration-200"
+            >
+              <i className="fas fa-times text-xl"></i>
+            </button>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="text-gray-300 hover:text-white transition-colors duration-200"
-        >
-          <i className="fas fa-times text-xl"></i>
-        </button>
-      </div>
 
-      {/* Content */}
-      <div className="p-4 sm:p-6">
+        {/* Content */}
+        <div className="p-4 sm:p-6">
         {/* App Summary */}
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -234,10 +237,39 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
           </div>
         )}
 
+        {/* Instructions */}
+        <div className="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <i className="fas fa-info-circle text-amber-600 dark:text-amber-400 mt-1"></i>
+            <div className="text-sm text-amber-800 dark:text-amber-200">
+              <p className="font-medium mb-1">Instrucciones de uso:</p>
+              {scriptType === 'script' && (
+                <ul className="space-y-1">
+                  <li>1. Descarga el archivo .sh</li>
+                  <li>2. Hazlo ejecutable: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">chmod +x macos-setup.sh</code></li>
+                  <li>3. Ejecuta: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">./macos-setup.sh</code></li>
+                </ul>
+              )}
+              {scriptType === 'commands' && (
+                <ul className="space-y-1">
+                  <li>• Copia y pega los comandos en tu terminal uno por uno</li>
+                  <li>• O ejecuta todos a la vez copiando todo el contenido</li>
+                </ul>
+              )}
+              {scriptType === 'brewfile' && (
+                <ul className="space-y-1">
+                  <li>1. Guarda como "Brewfile" (sin extensión)</li>
+                  <li>2. Ejecuta: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">brew bundle --file=Brewfile</code></li>
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Script Display */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-700">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Script generado:
             </h3>
             <div className="flex space-x-2">
@@ -271,34 +303,6 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
                 <code>{generatedScript || '# Selecciona aplicaciones para generar el script'}</code>
               )}
             </pre>
-          </div>
-        </div>
-
-        {/* Instructions */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <div className="flex items-start space-x-3">
-            <i className="fas fa-info-circle text-amber-600 mt-1"></i>
-            <div className="text-sm text-amber-800">
-              <p className="font-medium mb-1">Instrucciones de uso:</p>
-              {scriptType === 'script' && (
-                <ul className="space-y-1">
-                  <li>1. Descarga el archivo .sh</li>
-                  <li>2. Hazlo ejecutable: <code className="bg-amber-100 px-1 rounded">chmod +x macos-setup.sh</code></li>
-                  <li>3. Ejecuta: <code className="bg-amber-100 px-1 rounded">./macos-setup.sh</code></li>
-                </ul>
-              )}
-              {scriptType === 'commands' && (
-                <ul className="space-y-1">
-                  <li>• Copia y pega los comandos en tu terminal uno por uno</li>
-                  <li>• O ejecuta todos a la vez copiando todo el contenido</li>
-                </ul>
-              )}
-              {scriptType === 'brewfile' && (
-                <ul className="space-y-1">
-                  <li>1. Guarda como "Brewfile" (sin extensión)</li>
-                  <li>2. Ejecuta: <code className="bg-amber-100 px-1 rounded">brew bundle --file=Brewfile</code></li>
-                </ul>
-              )}
             </div>
           </div>
         </div>
