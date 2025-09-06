@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Sharing Issue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-input {
+            width: 100%;
+            height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d1edff;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Sharing Issue</h1>
+        <p>Esta página te ayudará a debuggear el problema de generación de enlaces compartibles.</p>
+        
+        <h3>Perfil de Prueba:</h3>
+        <textarea id="profileInput" class="profile-input" placeholder="Pega aquí el JSON del perfil que está fallando...">{
+  "id": "test-profile",
+  "name": "Mi Perfil de Desarrollo",
+  "description": "Herramientas de desarrollo esenciales",
+  "apps": [
+    {
+      "id": "visual-studio-code",
+      "name": "Visual Studio Code",
+      "description": "Editor de código moderno y potente",
+      "homepage": "https://code.visualstudio.com/",
+      "version": "latest",
+      "installType": "brew-cask",
+      "category": "desarrollo",
+      "source": "homebrew",
+      "command": "brew install --cask visual-studio-code"
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "description": "Sistema de control de versiones",
+      "homepage": "https://git-scm.com/",
+      "version": "latest",
+      "installType": "brew",
+      "category": "desarrollo",
+      "source": "homebrew",
+      "command": "brew install git"
+    }
+  ],
+  "createdAt": "2025-09-06T11:18:57.050Z",
+  "updatedAt": "2025-09-06T11:18:57.050Z",
+  "isDefault": false
+}</textarea>
+
+        <div>
+            <button class="test-button" onclick="testProfile()">🧪 Test Sharing</button>
+            <button class="test-button" onclick="testEmptyProfile()">📄 Test Empty Profile</button>
+            <button class="test-button" onclick="testCurrentSelection()">⭐ Test Current Selection</button>
+            <button class="test-button" onclick="clearResults()">🗑️ Clear Results</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Simular ShareableProfileService (versión simplificada)
+        class ShareableProfileService {
+            static VERSION = '1.0';
+            static URL_PARAM = 'profile';
+            static MAX_URL_LENGTH = 8192;
+
+            static generateShareableUrl(profile) {
+                try {
+                    console.log('🚀 Iniciando generateShareableUrl con perfil:', {
+                        name: profile?.name,
+                        description: profile?.description,
+                        appsCount: profile?.apps?.length || 0,
+                        fullProfile: profile
+                    });
+
+                    // Validar que el perfil existe y tiene las propiedades necesarias
+                    if (!profile) {
+                        throw new Error('El perfil no existe');
+                    }
+                    
+                    if (profile.name === null || profile.name === undefined) {
+                        throw new Error('El perfil no tiene nombre');
+                    }
+                    
+                    if (!Array.isArray(profile.apps)) {
+                        throw new Error('El perfil no tiene aplicaciones válidas');
+                    }
+
+                    console.log('✅ Validaciones básicas pasadas');
+
+                    const shareableProfile = {
+                        name: profile.name || 'Perfil sin nombre',
+                        description: profile.description || '',
+                        apps: profile.apps,
+                        version: this.VERSION
+                    };
+
+                    console.log('📝 ShareableProfile creado:', shareableProfile.name);
+
+                    // Comprimir el perfil
+                    console.log('🗜️ Iniciando compresión...');
+                    const compressed = this.compressProfile(shareableProfile);
+                    
+                    console.log('🔒 Iniciando codificación...');
+                    const encoded = this.encodeProfile(compressed);
+
+                    // Crear la URL
+                    console.log('🔗 Creando URL final...');
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set(this.URL_PARAM, encoded);
+                    
+                    const shareableUrl = currentUrl.toString();
+
+                    // Verificar que la URL no sea demasiado larga
+                    if (shareableUrl.length > this.MAX_URL_LENGTH) {
+                        throw new Error('El perfil es demasiado grande para compartir via URL');
+                    }
+
+                    console.log('🎉 URL compartible generada exitosamente:', {
+                        encodedLength: encoded.length,
+                        finalUrlLength: shareableUrl.length,
+                        url: shareableUrl
+                    });
+                    
+                    return shareableUrl;
+                } catch (error) {
+                    console.error('❌ Error completo en generateShareableUrl:', error);
+                    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+                    throw new Error(`No se pudo generar el enlace compartible: ${errorMessage}`);
+                }
+            }
+
+            static compressProfile(profile) {
+                try {
+                    console.log('🗜️ Iniciando compressProfile con:', profile);
+                    
+                    const compressed = {
+                        n: profile.name,
+                        d: profile.description,
+                        v: profile.version,
+                        a: profile.apps.map((app, index) => {
+                            console.log(`📱 Procesando app ${index + 1}/${profile.apps.length}:`, app.name);
+                            return {
+                                i: app.id,
+                                n: app.name,
+                                d: app.description,
+                                h: app.homepage,
+                                v: app.version,
+                                t: app.installType,
+                                c: app.category,
+                                s: app.source,
+                                ...(app.command && { cmd: app.command }),
+                                ...(app.isSpecial && { sp: app.isSpecial }),
+                                ...(app.architecture && { arch: app.architecture })
+                            };
+                        })
+                    };
+                    
+                    console.log('✅ Compresión completada. Apps procesadas:', compressed.a.length);
+                    return compressed;
+                } catch (error) {
+                    console.error('❌ Error en compressProfile:', error);
+                    throw new Error(`Error comprimiendo perfil: ${error instanceof Error ? error.message : String(error)}`);
+                }
+            }
+
+            static encodeProfile(compressedProfile) {
+                try {
+                    console.log('🔍 Iniciando encodeProfile con:', compressedProfile);
+                    
+                    const jsonString = JSON.stringify(compressedProfile);
+                    console.log('📝 JSON string generado, longitud:', jsonString.length);
+                    
+                    const encodedURI = encodeURIComponent(jsonString);
+                    console.log('🔗 URI encoded, longitud:', encodedURI.length);
+                    
+                    const base64 = btoa(encodedURI);
+                    console.log('🔒 Base64 encoded, longitud:', base64.length);
+                    
+                    return base64;
+                } catch (error) {
+                    console.error('❌ Error en encodeProfile:', error);
+                    throw new Error(`Error codificando perfil: ${error instanceof Error ? error.message : String(error)}`);
+                }
+            }
+        }
+
+        function addResult(content, type = 'result') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = content;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function testProfile() {
+            clearResults();
+            addResult('=== TESTING PROFILE SHARING ===', 'success');
+            
+            try {
+                const profileText = document.getElementById('profileInput').value;
+                const profile = JSON.parse(profileText);
+                
+                addResult(`📋 Profile parsed successfully:
+- Name: ${profile.name}
+- Description: ${profile.description}
+- Apps count: ${profile.apps?.length || 0}`, 'success');
+
+                const url = ShareableProfileService.generateShareableUrl(profile);
+                
+                addResult(`✅ SUCCESS! Generated URL:
+${url}`, 'success');
+                
+                // Intentar copiar al portapapeles
+                navigator.clipboard.writeText(url).then(() => {
+                    addResult('📋 URL copied to clipboard!', 'success');
+                }).catch(err => {
+                    addResult(`⚠️ Could not copy to clipboard: ${err.message}`, 'error');
+                });
+                
+            } catch (error) {
+                addResult(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        function testEmptyProfile() {
+            clearResults();
+            addResult('=== TESTING EMPTY PROFILE ===', 'success');
+            
+            try {
+                const emptyProfile = {
+                    id: 'empty-profile',
+                    name: '',
+                    description: '',
+                    apps: [],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isDefault: false
+                };
+                
+                const url = ShareableProfileService.generateShareableUrl(emptyProfile);
+                addResult(`✅ SUCCESS! Empty profile URL generated:
+${url}`, 'success');
+                
+            } catch (error) {
+                addResult(`❌ ERROR with empty profile: ${error.message}`, 'error');
+            }
+        }
+
+        function testCurrentSelection() {
+            clearResults();
+            addResult('=== TESTING CURRENT SELECTION SIMULATION ===', 'success');
+            
+            try {
+                // Simular un perfil basado en selección actual (como lo haría la app)
+                const currentProfile = {
+                    id: 'current-selection',
+                    name: 'Mi Selección Actual',
+                    description: 'Aplicaciones seleccionadas actualmente',
+                    apps: [
+                        {
+                            id: 'vscode',
+                            name: 'Visual Studio Code',
+                            description: 'Editor de código',
+                            homepage: 'https://code.visualstudio.com/',
+                            version: 'latest',
+                            installType: 'cask',
+                            category: 'development',
+                            source: 'homebrew',
+                            command: 'brew install --cask visual-studio-code'
+                        }
+                    ],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isDefault: false
+                };
+                
+                const url = ShareableProfileService.generateShareableUrl(currentProfile);
+                addResult(`✅ SUCCESS! Current selection URL:
+${url}`, 'success');
+                
+            } catch (error) {
+                addResult(`❌ ERROR with current selection: ${error.message}`, 'error');
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            console.clear();
+        }
+
+        // Test automático al cargar la página
+        window.onload = function() {
+            addResult('🔧 Debug tool loaded. Click buttons to test different scenarios.', 'success');
+        };
+    </script>
+</body>
+</html>

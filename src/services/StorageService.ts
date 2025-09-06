@@ -155,29 +155,10 @@ class StorageService {
   }
 
   /**
-   * Obtener perfiles por defecto
+   * Obtener perfiles por defecto (vacío para inicialización limpia)
    */
   private static getDefaultProfiles(): AppProfile[] {
-    return [
-      {
-        id: 'default-dev',
-        name: 'Desarrollo Completo',
-        description: 'Herramientas esenciales para desarrollo web y móvil',
-        apps: [], // Se llenarán dinámicamente
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isDefault: true
-      },
-      {
-        id: 'default-basic',
-        name: 'Setup Básico',
-        description: 'Aplicaciones básicas para uso diario',
-        apps: [], // Se llenarán dinámicamente
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isDefault: true
-      }
-    ];
+    return [];
   }
 
   // ===== PREFERENCIAS =====

@@ -1,58 +1,76 @@
-import iconImage from '../assets/icon.png';
+/**
+ * Componente Header - Cabecera de la aplicación
+ */
+
+import ThemeToggle from './ThemeToggle';
+import type { AppProfile } from '../services/StorageService';
+import iconPng from '../assets/icon.png';
 
 interface HeaderProps {
   selectedCount?: number;
-  totalApps?: number;
+  currentProfile?: AppProfile | null;
+  onShowSelectedApps?: () => void;
 }
 
-export const Header = ({ selectedCount = 0, totalApps = 0 }: HeaderProps) => {
+export const Header = ({ selectedCount = 0, currentProfile, onShowSelectedApps }: HeaderProps) => {
   const hasSelections = selectedCount > 1; // More than just homebrew
   
   return (
-    <header className="text-center mb-8 sm:mb-10 bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
-      <div className="text-white">
-        {/* Main Title Section with Icon and Text */}
-        <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mb-3 sm:mb-4">
-          {/* Custom PNG Icon - Left Side */}
-          <img 
-            src={iconImage} 
-            alt="macOS Setup Assistant" 
-            className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-44 lg:h-44 xl:w-52 xl:h-52 object-contain"
-          />
+    <header className="bg-white dark:bg-secondary-900 border-b border-secondary-200 dark:border-secondary-700 px-6 py-4 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-warning-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+              <img 
+                src={iconPng} 
+                alt="macOS Setup Assistant" 
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-secondary-900 dark:text-white">
+                macOS Setup Brew Assistant
+              </h1>
+              <p className="text-sm text-secondary-600 dark:text-secondary-400">
+                Tu asistente inteligente para configurar macOS con Homebrew
+              </p>
+            </div>
+          </div>
           
-          {/* Title with Cider Bottle - Right Side */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light">
-              macOS Setup Assistant
-            </h1>
-            <i className="fa fa-wine-bottle text-primary-400 text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"></i>
+          <div className="flex items-center space-x-6">
+            <ThemeToggle showLabel={false} size="md" />
+            
+            <div className="hidden md:flex items-center space-x-2 text-sm text-secondary-500 dark:text-secondary-400">
+              <i className="fab fa-github"></i>
+              <span>v2.0.0</span>
+            </div>
+            
+            {/* Profile indicator */}
+            {currentProfile && (
+              <div className="flex items-center space-x-2 bg-accent-50 dark:bg-accent-900/20 px-3 py-1 rounded-full">
+                <i className="fas fa-user-cog text-accent-600 dark:text-accent-400"></i>
+                <span className="text-sm font-medium text-accent-700 dark:text-accent-300">
+                  {currentProfile.name}
+                </span>
+              </div>
+            )}
+            
+            {/* Stats counter when selections are made */}
+            {hasSelections && (
+              <button
+                onClick={onShowSelectedApps}
+                className="flex items-center space-x-2 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 px-3 py-1 rounded-full transition-colors cursor-pointer"
+                title="Ver aplicaciones seleccionadas"
+              >
+                <i className="fas fa-check-circle text-primary-600 dark:text-primary-400"></i>
+                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                  {selectedCount} app{selectedCount !== 1 ? 's' : ''} seleccionada{selectedCount !== 1 ? 's' : ''}
+                </span>
+                <i className="fas fa-external-link-alt text-xs text-primary-500"></i>
+              </button>
+            )}
           </div>
         </div>
-        <p className="text-base sm:text-lg md:text-xl opacity-90 mb-2 sm:mb-3 px-4">
-          Genera tu script personalizado de instalación para macOS
-        </p>
-        <p className="text-xs sm:text-sm md:text-base text-primary-300 opacity-70 mb-3 sm:mb-4 px-4">
-          Pure vibe coding ❤️
-        </p>
-        
-        {/* Selection Summary */}
-        {hasSelections && (
-          <div className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
-            <i className="fa fa-check-circle text-green-300"></i>
-            <span className="font-medium text-sm sm:text-base">
-              {selectedCount} app{selectedCount !== 1 ? 's' : ''} listas
-            </span>
-          </div>
-        )}
-        
-        {!hasSelections && totalApps > 0 && (
-          <div className="mt-4 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
-            <i className="fa fa-info-circle text-primary-300"></i>
-            <span className="opacity-90">
-              {totalApps} aplicaciones disponibles para seleccionar
-            </span>
-          </div>
-        )}
       </div>
     </header>
   );

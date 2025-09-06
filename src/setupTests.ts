@@ -1,14 +1,39 @@
 import '@testing-library/jest-dom';
 
+// Mock URL constructor for testing environment
+class MockURL {
+  searchParams: URLSearchParams;
+  href: string;
+  
+  constructor(url: string) {
+    this.href = url;
+    const parts = url.split('?');
+    this.searchParams = new URLSearchParams(parts[1] || '');
+  }
+  
+  toString() {
+    const params = this.searchParams.toString();
+    return params ? `${this.href.split('?')[0]}?${params}` : this.href.split('?')[0];
+  }
+}
+
 // Mock URL methods for JSDOM environment
 Object.defineProperty(globalThis, 'URL', {
-  value: {
-    ...globalThis.URL,
-    createObjectURL: jest.fn(() => 'blob:mock-url'),
-    revokeObjectURL: jest.fn(),
-  },
+  value: MockURL,
   writable: true,
 });
+
+// Mock window.history for testing
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'history', {
+    value: {
+      replaceState: jest.fn(),
+      pushState: jest.fn(),
+    },
+    writable: true,
+    configurable: true,
+  });
+}
 
 // Mock document.execCommand for clipboard fallback
 Object.defineProperty(document, 'execCommand', {

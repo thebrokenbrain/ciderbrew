@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useAppSelection } from '../useAppSelection';
+import useAppSelection from '../useAppSelection';
 import type { SearchableApp } from '../../types/api';
 
 describe('useAppSelection - Updated', () => {

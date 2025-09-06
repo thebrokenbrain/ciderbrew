@@ -2,6 +2,13 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        types: ['node', 'jest', '@testing-library/jest-dom']
+      }
+    }
+  },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(png|jpg|jpeg|gif|svg|ico)$': '<rootDir>/src/__mocks__/fileMock.js',
@@ -26,7 +33,8 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/hooks/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/services/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/components/__tests__/**/*.{ts,tsx}'
+    '<rootDir>/src/components/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/__tests__/**/*.{ts,tsx}'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {

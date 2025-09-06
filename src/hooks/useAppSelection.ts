@@ -1,305 +1,446 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import StorageService, { type AppProfile } from '../services/StorageService';
 import type { SearchableApp, Toast } from '../types/api';
-import StorageService from '../services/StorageService';
-import URLStateService from '../services/URLStateService';
+import type { App } from '../types';
 
-export interface AppSelectionState {
-  selectedApps: Map<string, SearchableApp>;
-  selectedIds: Set<string>;
-  count: number;
-  toasts: Toast[];
-  isLoading: boolean;
-}
+// Función helper para convertir App a SearchableApp
+const convertAppToSearchableApp = (app: App): SearchableApp => ({
+  id: app.id,
+  name: app.name,
+  description: app.description,
+  homepage: '', // No disponible en el formato App
+  version: 'latest',
+  installType: app.installType as 'brew' | 'brew-cask' | 'custom',
+  command: app.command,
+  category: app.category,
+  source: 'predefined' as const,
+  isSelected: false,
+  isSpecial: app.isSpecial || false,
+  icon: app.icon,
+  postInstallNotes: app.postInstallNotes
+});
 
-export interface AppSelectionActions {
-  selectApp: (app: SearchableApp) => void;
-  deselectApp: (appId: string) => void;
-  toggleApp: (app: SearchableApp, isSelected: boolean) => void;
-  clearSelection: () => void;
-  isSelected: (appId: string) => boolean;
-  getSelectedApps: () => SearchableApp[];
-  getSelectionArray: () => SearchableApp[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
-  removeToast: (id: string) => void;
-  loadFromProfile: (profileId: string) => void;
-  saveAsProfile: (name: string, description: string) => void;
-  loadFromURL: () => void;
-  generateShareURL: () => string;
-}
-
-export function useAppSelection(): AppSelectionState & AppSelectionActions {
+const useAppSelection = () => {
   const [selectedApps, setSelectedApps] = useState<Map<string, SearchableApp>>(new Map());
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [profiles, setProfiles] = useState<AppProfile[]>([]);
+  const [currentProfile, setCurrentProfile] = useState<AppProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Definir addToast primero para poder usarlo en otros lugares
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = { ...toast, id };
-    
+    const newToast: Toast = {
+      ...toast,
+      id: Date.now().toString(),
+      timeout: toast.timeout || toast.duration || 5000
+    };
     setToasts(prev => [...prev, newToast]);
     
-    // Auto remove toast after duration
-    if (toast.duration && toast.duration > 0) {
-      setTimeout(() => {
-        setToasts(prevToasts => prevToasts.filter(t => t.id !== id));
-      }, toast.duration);
-    }
+    // Auto remove toast after timeout
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== newToast.id));
+    }, newToast.timeout);
   }, []);
 
-  // Cargar estado inicial al montar el componente
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
   useEffect(() => {
-    const initializeSelection = async () => {
+    const loadInitialData = async () => {
       try {
         setIsLoading(true);
         
-        // 1. Intentar cargar desde URL primero (prioridad alta)
-        const urlState = URLStateService.loadStateFromURL();
-        if (urlState?.apps?.length) {
-          // TODO: Resolver IDs de apps a objetos completos
-          // Por ahora, cargamos desde localStorage como fallback
-        }
+        // 1. Cargar perfiles existentes
+        const savedProfiles = StorageService.loadProfiles();
+        setProfiles(savedProfiles);
         
-        // 2. Cargar desde localStorage
+        // 2. Cargar todas las aplicaciones disponibles desde la base de datos
+        const { appConfig } = await import('../data/apps');
+        const allApps = appConfig.apps;
+        
+        // 3. Inicializar el Map con todas las aplicaciones disponibles
+        const appMap = new Map<string, SearchableApp>();
+        allApps.forEach((app: App) => {
+          const searchableApp = convertAppToSearchableApp(app);
+          appMap.set(app.id, searchableApp);
+        });
+        console.log('🗺️ Map inicializado con', appMap.size, 'aplicaciones');
+        
+        // 4. Cargar selección guardada desde localStorage y marcar como seleccionadas
         const savedApps = StorageService.loadCurrentSelection();
         if (savedApps.length > 0) {
-          const appMap = new Map(savedApps.map(app => [app.id, { ...app, isSelected: true }]));
-          setSelectedApps(appMap);
+          savedApps.forEach((savedApp: SearchableApp) => {
+            if (appMap.has(savedApp.id)) {
+              const existingApp = appMap.get(savedApp.id);
+              if (existingApp) {
+                appMap.set(savedApp.id, { ...existingApp, isSelected: true });
+              }
+            }
+          });
         }
+        
+        setSelectedApps(appMap);
       } catch (error) {
-        console.warn('Error inicializando selección:', error);
+        console.error('Error loading initial data:', error);
         addToast({
-          title: 'Error de carga',
-          message: 'No se pudo cargar la selección guardada',
-          type: 'warning',
-          duration: 5000
+          title: 'Error cargando datos',
+          message: 'Hubo un problema cargando la información inicial',
+          type: 'error'
         });
       } finally {
         setIsLoading(false);
       }
     };
 
-    initializeSelection();
+    loadInitialData();
   }, [addToast]);
 
-  // Auto-guardar en localStorage cuando cambie la selección
-  useEffect(() => {
-    if (!isLoading && selectedApps.size >= 0) {
-      const appsArray = Array.from(selectedApps.values());
-      StorageService.saveCurrentSelection(appsArray);
-      URLStateService.updateURL(appsArray);
-    }
-  }, [selectedApps, isLoading]);
-
-  const selectApp = useCallback((app: SearchableApp) => {
-    setSelectedApps(prev => {
-      const newMap = new Map(prev);
-      newMap.set(app.id, { ...app, isSelected: true });
-      return newMap;
-    });
-
-    addToast({
-      title: 'Aplicación añadida',
-      message: `${app.name} se ha añadido a tu selección`,
-      type: 'success',
-      duration: 3000
-    });
-  }, [addToast]);
-
-  const deselectApp = useCallback((appId: string) => {
+  const selectApp = useCallback((appId: string) => {
+    console.log('🔍 Intentando seleccionar app:', appId);
     setSelectedApps(prev => {
       const app = prev.get(appId);
-      const newMap = new Map(prev);
-      newMap.delete(appId);
       
       if (app) {
-        addToast({
-          title: 'Aplicación eliminada',
-          message: `${app.name} se ha eliminado de tu selección`,
-          type: 'info',
-          duration: 3000
-        });
+        const updated = new Map(prev);
+        const updatedApp = { ...app, isSelected: !app.isSelected };
+        updated.set(appId, updatedApp);
+        console.log('✅ App actualizada:', `${updatedApp.name} -> ${updatedApp.isSelected ? 'SELECCIONADA' : 'DESELECCIONADA'}`);
+        
+        // Guardar en localStorage
+        const selectedList = Array.from(updated.values()).filter((app: SearchableApp) => app.isSelected);
+        StorageService.saveCurrentSelection(selectedList);
+        
+        return updated;
+      } else {
+        console.log('❌ App NO ENCONTRADA en el Map para ID:', appId);
+        console.log('⚠️ Esta app probablemente viene de la búsqueda de Homebrew y no está en el Map inicial');
+        console.log('💡 Para solucionarlo, la app debería añadirse al Map cuando se selecciona por primera vez');
       }
-      
-      return newMap;
+      return prev;
     });
-  }, [addToast]);
+  }, []);
 
-  const toggleApp = useCallback((app: SearchableApp, isSelected: boolean) => {
-    if (isSelected) {
-      selectApp(app);
-    } else {
-      deselectApp(app.id);
-    }
-  }, [selectApp, deselectApp]);
-
-  const clearSelection = useCallback(() => {
-    const count = selectedApps.size;
-    setSelectedApps(new Map());
-    URLStateService.clearURLState();
+  const saveProfile = useCallback((name: string, description: string = '') => {
+    const selectedAppsList = Array.from(selectedApps.values()).filter((app: SearchableApp) => app.isSelected);
     
-    if (count > 0) {
-      addToast({
-        title: 'Selección limpiada',
-        message: `Se han eliminado ${count} aplicaciones`,
-        type: 'info',
-        duration: 3000
-      });
-    }
-  }, [selectedApps.size, addToast]);
-
-  const isSelected = useCallback((appId: string) => {
-    return selectedApps.has(appId);
-  }, [selectedApps]);
-
-  const getSelectedApps = useCallback(() => {
-    return Array.from(selectedApps.values());
-  }, [selectedApps]);
-
-  const getSelectionArray = useCallback(() => {
-    return Array.from(selectedApps.values());
-  }, [selectedApps]);
-
-  const loadFromProfile = useCallback((profileId: string) => {
-    try {
-      const profiles = StorageService.loadProfiles();
-      const profile = profiles.find(p => p.id === profileId);
-      
-      if (!profile) {
-        throw new Error('Perfil no encontrado');
-      }
-
-      const appMap = new Map(profile.apps.map(app => [app.id, { ...app, isSelected: true }]));
-      setSelectedApps(appMap);
-
-      addToast({
-        title: 'Perfil cargado',
-        message: `Se han cargado ${profile.apps.length} aplicaciones de "${profile.name}"`,
-        type: 'success',
-        duration: 5000
-      });
-    } catch (error) {
-      console.error('Error cargando perfil:', error);
+    if (selectedAppsList.length === 0) {
       addToast({
         title: 'Error',
-        message: 'No se pudo cargar el perfil seleccionado',
-        type: 'error',
-        duration: 5000
+        message: 'No hay aplicaciones seleccionadas para guardar',
+        type: 'error'
       });
+      return false;
     }
-  }, [addToast]);
 
-  const saveAsProfile = useCallback((name: string, description: string) => {
     try {
-      const apps = Array.from(selectedApps.values());
-      
-      if (apps.length === 0) {
-        throw new Error('No hay aplicaciones seleccionadas');
-      }
-
-      const profile = StorageService.saveProfile(name, description, apps);
+      StorageService.saveProfile(name, description, selectedAppsList);
+      setProfiles(StorageService.loadProfiles()); // Recargar perfiles
       
       addToast({
         title: 'Perfil guardado',
-        message: `"${profile.name}" se ha guardado con ${apps.length} aplicaciones`,
-        type: 'success',
-        duration: 5000
+        message: `El perfil "${name}" se ha guardado correctamente`,
+        type: 'success'
       });
+      
+      return true;
     } catch (error) {
-      console.error('Error guardando perfil:', error);
+      console.error('Error saving profile:', error);
       addToast({
         title: 'Error',
-        message: error instanceof Error ? error.message : 'No se pudo guardar el perfil',
-        type: 'error',
-        duration: 5000
+        message: 'No se pudo guardar el perfil',
+        type: 'error'
       });
+      return false;
     }
   }, [selectedApps, addToast]);
 
-  const loadFromURL = useCallback(() => {
+  const deleteProfile = useCallback((profileId: string) => {
     try {
-      const urlState = URLStateService.loadStateFromURL();
-      if (!urlState?.apps?.length) {
-        throw new Error('No hay configuración en la URL');
-      }
-
-      // TODO: Resolver IDs a objetos completos usando servicios de búsqueda
+      StorageService.deleteProfile(profileId);
+      setProfiles(StorageService.loadProfiles()); // Recargar perfiles
+      
       addToast({
-        title: 'Configuración cargada',
-        message: `Se han cargado ${urlState.apps.length} aplicaciones desde la URL`,
-        type: 'success',
-        duration: 5000
+        title: 'Perfil eliminado',
+        message: 'El perfil se ha eliminado correctamente',
+        type: 'success'
       });
     } catch (error) {
-      console.error('Error cargando desde URL:', error);
+      console.error('Error deleting profile:', error);
       addToast({
         title: 'Error',
-        message: 'No se pudo cargar la configuración desde la URL',
-        type: 'warning',
-        duration: 5000
+        message: 'No se pudo eliminar el perfil',
+        type: 'error'
       });
     }
   }, [addToast]);
 
-  const generateShareURL = useCallback(() => {
-    try {
-      const apps = Array.from(selectedApps.values());
-      const shareURL = URLStateService.generateShareableURL(apps);
+  const clearSelection = useCallback(() => {
+    setSelectedApps(prev => {
+      const updated = new Map();
+      for (const [id, app] of prev) {
+        updated.set(id, { ...app, isSelected: false });
+      }
       
-      // Copiar al portapapeles
-      navigator.clipboard.writeText(shareURL).then(() => {
-        addToast({
-          title: 'URL copiada',
-          message: 'El enlace de tu configuración se ha copiado al portapapeles',
-          type: 'success',
-          duration: 5000
-        });
-      }).catch(() => {
-        addToast({
-          title: 'URL generada',
-          message: 'Enlace generado, pero no se pudo copiar automáticamente',
-          type: 'info',
-          duration: 5000
-        });
-      });
+      // Limpiar localStorage
+      StorageService.saveCurrentSelection([]);
       
-      return shareURL;
-    } catch (error) {
-      console.error('Error generando URL:', error);
-      addToast({
-        title: 'Error',
-        message: 'No se pudo generar el enlace de compartir',
-        type: 'error',
-        duration: 5000
-      });
-      return window.location.href;
-    }
-  }, [selectedApps, addToast]);
+      return updated;
+    });
+    
+    addToast({
+      title: 'Selección limpiada',
+      message: 'Se ha limpiado la selección de aplicaciones',
+      type: 'success'
+    });
+  }, [addToast]);
 
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+  // Propiedades de compatibilidad derivadas
+  const selectedIds = useMemo(() => {
+    const ids = new Set<string>();
+    selectedApps.forEach((app, id) => {
+      if (app.isSelected) {
+        ids.add(id);
+      }
+    });
+    console.log('🎯 selectedIds calculado:', ids.size, 'apps seleccionadas');
+    return ids;
+  }, [selectedApps]);
+  
+  const count = selectedIds.size;
+  
+  const getSelectedApps = useCallback(() => {
+    return Array.from(selectedApps.values()).filter((app: SearchableApp) => app.isSelected);
+  }, [selectedApps]);
+
+  const toggleApp = useCallback((app: SearchableApp, _selected: boolean) => {
+    console.log('🎯 toggleApp llamado para:', app.name, '- ID:', app.id);
+    
+    setSelectedApps(prev => {
+      const existingApp = prev.get(app.id);
+      const updated = new Map(prev);
+      
+      if (existingApp) {
+        // La app ya existe en el Map, solo cambiar su estado
+        const updatedApp = { ...existingApp, isSelected: !existingApp.isSelected };
+        updated.set(app.id, updatedApp);
+        console.log('✅ App existente actualizada:', `${updatedApp.name} -> ${updatedApp.isSelected ? 'SELECCIONADA' : 'DESELECCIONADA'}`);
+      } else {
+        // La app no existe en el Map, añadirla como seleccionada
+        const newApp = { ...app, isSelected: true };
+        updated.set(app.id, newApp);
+        console.log('🆕 App nueva añadida al Map:', `${newApp.name} -> SELECCIONADA`);
+      }
+      
+      // Guardar en localStorage
+      const selectedList = Array.from(updated.values()).filter((app: SearchableApp) => app.isSelected);
+      StorageService.saveCurrentSelection(selectedList);
+      
+      return updated;
+    });
   }, []);
 
-  const selectedIds = new Set(selectedApps.keys());
+  const isSelected = useCallback((appId: string) => {
+    return selectedApps.get(appId)?.isSelected || false;
+  }, [selectedApps]);
+
+  const createProfile = saveProfile;
+  
+  const updateCurrentProfile = useCallback(() => {
+    if (currentProfile) {
+      const selectedAppsList = getSelectedApps();
+      
+      // Actualizar el perfil usando StorageService
+      StorageService.updateProfile(currentProfile.id, {
+        apps: selectedAppsList,
+        updatedAt: new Date()
+      });
+      
+      // Recargar perfiles para reflejar cambios
+      const updatedProfiles = StorageService.loadProfiles();
+      setProfiles(updatedProfiles);
+      
+      // Actualizar currentProfile con la versión actualizada
+      const updatedCurrentProfile = updatedProfiles.find(p => p.id === currentProfile.id);
+      if (updatedCurrentProfile) {
+        setCurrentProfile(updatedCurrentProfile);
+      }
+      
+      addToast({
+        title: 'Perfil actualizado',
+        message: `El perfil "${currentProfile.name}" ha sido actualizado con ${selectedAppsList.length} aplicaciones`,
+        type: 'success'
+      });
+    }
+  }, [currentProfile, getSelectedApps, addToast]);
+  
+  const exportConfiguration = useCallback(() => {
+    const selectedAppsList = getSelectedApps();
+    if (selectedAppsList.length === 0) {
+      addToast({
+        title: 'Error',
+        message: 'No hay aplicaciones seleccionadas para exportar',
+        type: 'error'
+      });
+      return;
+    }
+
+    const profile = {
+      name: `Configuración ${new Date().toLocaleDateString()}`,
+      description: 'Configuración exportada',
+      apps: selectedAppsList,
+      exportDate: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(profile, null, 2)], {
+      type: 'application/json'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `macos-setup-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    addToast({
+      title: 'Configuración exportada',
+      message: 'El archivo se ha descargado correctamente',
+      type: 'success'
+    });
+  }, [getSelectedApps, addToast]);
+
+  const importConfiguration = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const importedProfile = JSON.parse(content);
+        
+        if (!importedProfile.apps || !Array.isArray(importedProfile.apps)) {
+          throw new Error('Formato de archivo inválido');
+        }
+
+        // Cargar las apps importadas
+        setSelectedApps(prevMap => {
+          const newMap = new Map(prevMap);
+          
+          // Primero desmarcar todas las aplicaciones
+          newMap.forEach((app, id) => {
+            newMap.set(id, { ...app, isSelected: false });
+          });
+          
+          // Luego marcar como seleccionadas las aplicaciones importadas
+          importedProfile.apps.forEach((importedApp: SearchableApp) => {
+            if (newMap.has(importedApp.id)) {
+              const existingApp = newMap.get(importedApp.id);
+              if (existingApp) {
+                newMap.set(importedApp.id, { ...existingApp, isSelected: true });
+              }
+            } else {
+              // Si la app no existe en el Map, agregarla
+              newMap.set(importedApp.id, { ...importedApp, isSelected: true });
+            }
+          });
+          
+          return newMap;
+        });
+        
+        // Guardar en localStorage
+        StorageService.saveCurrentSelection(importedProfile.apps);
+
+        addToast({
+          title: 'Configuración importada',
+          message: `Se han importado ${importedProfile.apps.length} aplicaciones`,
+          type: 'success'
+        });
+      } catch (error) {
+        console.error('Error importing configuration:', error);
+        addToast({
+          title: 'Error',
+          message: 'No se pudo importar la configuración',
+          type: 'error'
+        });
+      }
+    };
+    reader.readAsText(file);
+  }, [addToast]);
 
   return {
     selectedApps,
-    selectedIds,
-    count: selectedApps.size,
-    toasts,
+    profiles,
     isLoading,
+    toasts,
+    count,
+    selectedIds,
     selectApp,
-    deselectApp,
     toggleApp,
-    clearSelection,
     isSelected,
     getSelectedApps,
-    getSelectionArray,
+    saveProfile,
+    createProfile,
+    loadProfile: (profileId: string) => {
+      const profile = profiles.find(p => p.id === profileId);
+      if (profile) {
+        try {
+          setSelectedApps(prevMap => {
+            const newMap = new Map(prevMap);
+            
+            // Primero desmarcar todas las aplicaciones
+            newMap.forEach((app, id) => {
+              newMap.set(id, { ...app, isSelected: false });
+            });
+            
+            // Luego marcar como seleccionadas las del perfil
+            profile.apps.forEach((profileApp: SearchableApp) => {
+              if (newMap.has(profileApp.id)) {
+                const existingApp = newMap.get(profileApp.id);
+                if (existingApp) {
+                  newMap.set(profileApp.id, { ...existingApp, isSelected: true });
+                }
+              } else {
+                // Si la app no existe en el Map, agregarla
+                newMap.set(profileApp.id, { ...profileApp, isSelected: true });
+              }
+            });
+            
+            return newMap;
+          });
+          
+          // Establecer como perfil actual
+          setCurrentProfile(profile);
+          
+          // Guardar en localStorage
+          StorageService.saveCurrentSelection(profile.apps);
+          
+          addToast({
+            title: 'Perfil cargado',
+            message: `Se ha cargado el perfil "${profile.name}" con ${profile.apps.length} aplicaciones`,
+            type: 'success'
+          });
+        } catch (error) {
+          console.error('Error loading profile:', error);
+          addToast({
+            title: 'Error',
+            message: 'No se pudo cargar el perfil',
+            type: 'error'
+          });
+        }
+      }
+    },
+    deleteProfile,
+    clearSelection,
     addToast,
     removeToast,
-    loadFromProfile,
-    saveAsProfile,
-    loadFromURL,
-    generateShareURL
+    currentProfile,
+    updateCurrentProfile,
+    exportConfiguration,
+    importConfiguration
   };
-}
+};
+
+export default useAppSelection;

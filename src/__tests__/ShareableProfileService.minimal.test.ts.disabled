@@ -1,0 +1,97 @@
+import { ShareableProfileService } from '../services/ShareableProfileService';
+import type { AppProfile } from '../services/StorageService';
+import type { SearchableApp } from '../types/api';
+
+describe('ShareableProfileService - Minimal Tests', () => {
+  const mockApp: SearchableApp = {
+    id: 'app1',
+    name: 'Test App',
+    description: 'A test app',
+    homepage: 'https://example.com',
+    version: '1.0.0',
+    installType: 'brew' as const,
+    category: 'development' as const,
+    source: 'homebrew' as const,
+    command: 'brew install test-app'
+  };
+
+  const mockProfile: AppProfile = {
+    id: 'test-profile',
+    name: 'Test Profile',
+    description: 'A test profile',
+    apps: [mockApp],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isDefault: false
+  };
+
+  describe('core functionality', () => {
+    test('should have all required static methods', () => {
+      expect(typeof ShareableProfileService.generateShareableUrl).toBe('function');
+      expect(typeof ShareableProfileService.getProfileFromCurrentUrl).toBe('function');
+      expect(typeof ShareableProfileService.clearProfileFromUrl).toBe('function');
+      expect(typeof ShareableProfileService.copyToClipboard).toBe('function');
+      expect(typeof ShareableProfileService.shareableToAppProfile).toBe('function');
+    });
+
+    test('shareableToAppProfile should convert properly', () => {
+      const shareableProfile = {
+        name: 'Test',
+        description: 'Test desc',
+        apps: [mockApp],
+        version: '1.0.0'
+      };
+
+      const appProfile = ShareableProfileService.shareableToAppProfile(shareableProfile);
+      
+      expect(appProfile.name).toBe('Test');
+      expect(appProfile.description).toBe('Test desc');
+      expect(appProfile.apps).toEqual([mockApp]);
+    });
+  });
+
+  describe('data encoding/decoding', () => {
+    test('should handle special characters in profile data', () => {
+      const specialProfile: AppProfile = {
+        ...mockProfile,
+        name: 'Test áéíóú ñ',
+        description: 'Special chars: @#$%^&*(){}[]'
+      };
+
+      expect(() => {
+        ShareableProfileService.generateShareableUrl(specialProfile);
+      }).not.toThrow();
+    });
+
+    test('should handle empty profile data', () => {
+      const minimalProfile: AppProfile = {
+        ...mockProfile,
+        name: '',
+        description: '',
+        apps: []
+      };
+
+      expect(() => {
+        ShareableProfileService.generateShareableUrl(minimalProfile);
+      }).not.toThrow();
+    });
+  });
+
+  describe('error handling', () => {
+    test('should not throw when generating URL with valid profile', () => {
+      expect(() => {
+        ShareableProfileService.generateShareableUrl(mockProfile);
+      }).not.toThrow();
+    });
+
+    test('should handle null/undefined profile gracefully', () => {
+      expect(() => {
+        ShareableProfileService.generateShareableUrl(null as any);
+      }).toThrow();
+
+      expect(() => {
+        ShareableProfileService.generateShareableUrl(undefined as any);
+      }).toThrow();
+    });
+  });
+});
