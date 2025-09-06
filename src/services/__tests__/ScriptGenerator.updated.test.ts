@@ -9,7 +9,7 @@ describe('ScriptGenerator - Updated', () => {
     homepage: 'https://test.com',
     version: '1.0.0',
     installType: 'brew-cask',
-    command: 'brew install --cask test-app',
+    command: 'test-app',
     category: 'Development',
     source: 'homebrew'
   };
@@ -21,7 +21,7 @@ describe('ScriptGenerator - Updated', () => {
     homepage: 'https://git-scm.com',
     version: 'latest',
     installType: 'brew',
-    command: 'brew install git',
+    command: 'git',
     category: 'Development',
     source: 'homebrew'
   };
