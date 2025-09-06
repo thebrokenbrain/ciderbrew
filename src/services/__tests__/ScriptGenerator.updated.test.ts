@@ -31,7 +31,7 @@ describe('ScriptGenerator - Updated', () => {
       const script = ScriptGenerator.generate([mockApp]);
       
       expect(script).toContain('#!/bin/bash');
-      expect(script).toContain('macOS Setup Script');
+      expect(script).toContain('Ciderbrew Installation Script');
       expect(script).toContain('Test App');
       expect(script).toContain('brew install --cask test-app');
     });
@@ -84,7 +84,7 @@ describe('ScriptGenerator - Updated', () => {
     it('should generate Brewfile format', () => {
       const brewfile = ScriptGenerator.generateBrewfile([mockApp, brewApp]);
       
-      expect(brewfile).toContain('# Brewfile generado por macOS Setup Assistant');
+      expect(brewfile).toContain('# Brewfile generado por Ciderbrew');
       expect(brewfile).toContain('brew "git"');
       expect(brewfile).toContain('cask "test-app"');
       expect(brewfile).toContain('brew bundle --file=Brewfile');

@@ -56,7 +56,7 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-500">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
               <i className="fas fa-user-cog mr-3 text-primary-500"></i>
@@ -225,7 +225,7 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
                     className={`p-4 rounded-lg border transition-colors ${
                       currentProfile?.id === profile.id
                         ? 'border-primary-300 bg-primary-50 dark:bg-primary-900/20 dark:border-primary-700'
-                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50'
+                        : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
                             )}
                             {profile.name}
                           </h4>
-                          <span className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full">
+                          <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
                             {profile.apps.length} apps
                           </span>
                         </div>

@@ -95,7 +95,7 @@ export function ThemeToggle({
         
         {/* Dropdown menu */}
         <div className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 py-1 min-w-max">
+          <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-500 py-1 min-w-max">
             <button
               onClick={() => setTheme('light')}
               className={`

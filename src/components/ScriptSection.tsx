@@ -62,10 +62,13 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
   };
 
   const downloadScript = () => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0] + '_' + 
+                     new Date().toISOString().split('T')[1].split('.')[0].replace(/:/g, '');
+    
     const filenames = {
-      script: 'macos-setup.sh',
-      commands: 'brew-commands.txt',
-      brewfile: 'Brewfile'
+      script: `ciderbrew_${timestamp}.sh`,
+      commands: `ciderbrew_commands_${timestamp}.txt`,
+      brewfile: `ciderbrew_brewfile_${timestamp}.txt`
     };
 
     const blob = new Blob([generatedScript], { type: 'text/plain' });
@@ -108,9 +111,9 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-700 to-primary-800 dark:from-primary-800 dark:to-primary-900 text-white">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-500 bg-gradient-to-r from-primary-700 to-primary-800 dark:from-primary-800 dark:to-primary-900 text-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <i className="fas fa-code text-xl"></i>
@@ -134,14 +137,14 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
         <div className="p-4 sm:p-6">
         {/* App Summary */}
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
             <div className="flex items-center space-x-2 mb-2">
               <i className="fas fa-terminal text-green-600"></i>
               <span className="font-medium text-green-800">Herramientas CLI</span>
             </div>
             <p className="text-2xl font-bold text-green-600">{brewApps.length}</p>
           </div>
-          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
             <div className="flex items-center space-x-2 mb-2">
               <i className="fas fa-desktop text-primary-600"></i>
               <span className="font-medium text-primary-800">Aplicaciones</span>
@@ -158,7 +161,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               onClick={() => setScriptType('script')}
-              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+              className={`p-3 rounded-xl border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'script'
                   ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -169,7 +172,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
             </button>
             <button
               onClick={() => setScriptType('commands')}
-              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+              className={`p-3 rounded-xl border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'commands'
                   ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -180,7 +183,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
             </button>
             <button
               onClick={() => setScriptType('brewfile')}
-              className={`p-3 rounded-lg border text-sm font-medium transition-all duration-200 ${
+              className={`p-3 rounded-xl border text-sm font-medium transition-all duration-200 ${
                 scriptType === 'brewfile'
                   ? 'bg-primary-50 border-primary-300 text-primary-700'
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -194,7 +197,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
 
         {/* Script Options (only for bash script) */}
         {scriptType === 'script' && (
-          <div className="mb-6 bg-gray-50 rounded-lg p-4">
+          <div className="mb-6 bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">Opciones del script:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -238,7 +241,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
         )}
 
         {/* Instructions */}
-        <div className="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+        <div className="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
           <div className="flex items-start space-x-3">
             <i className="fas fa-info-circle text-amber-600 dark:text-amber-400 mt-1"></i>
             <div className="text-sm text-amber-800 dark:text-amber-200">
@@ -293,7 +296,7 @@ export const ScriptSection: React.FC<ScriptSectionProps> = ({
           </div>
           
           <div className="relative">
-            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-96 overflow-y-auto">
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-xl overflow-x-auto text-sm max-h-96 overflow-y-auto">
               {isGenerating ? (
                 <div className="flex items-center space-x-2 text-gray-400">
                   <i className="fas fa-spinner fa-spin"></i>

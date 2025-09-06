@@ -58,7 +58,7 @@ describe('Visual Regression Prevention', () => {
       render(<App />);
       
       // Check for main title
-      expect(screen.getByText(/macOS Setup Brew Assistant/i)).toBeInTheDocument();
+      expect(screen.getByText(/Ciderbrew/i)).toBeInTheDocument();
       
       // Check for description
       expect(screen.getByText(/Tu asistente inteligente para configurar macOS con Homebrew/i)).toBeInTheDocument();

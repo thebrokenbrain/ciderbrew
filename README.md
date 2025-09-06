@@ -1,4 +1,4 @@
-# 🍎 macOS Setup Brew Assistant
+# � Ciderbrew
 
 Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tailwind CSS** que genera scripts personalizados de instalación para macOS usando Homebrew con búsqueda híbrida avanzada, detección automática de arquitectura y **sistema de perfiles compartibles**.
 
@@ -15,8 +15,8 @@ Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tail
 **🔗 [Ver Aplicación Online](https://thebrokenbrain.github.io/macos-setup-assistant/)**
 
 <div align="center">
-  <img src="src/assets/icon.png" alt="macOS Setup Brew Assistant" width="120" height="120">
-  <h3>macOS Setup Brew Assistant</h3>
+  <img src="src/assets/ciderbrew.png" alt="Ciderbrew" width="120" height="120">
+  <h3>Ciderbrew</h3>
   <p>Tu asistente inteligente para configurar macOS con las mejores aplicaciones</p>
 </div>
 
@@ -76,8 +76,8 @@ Una aplicación web moderna construida con **React 19**, **TypeScript** y **Tail
 **🔗 [Ver Aplicación Online](https://thebrokenbrain.github.io/macos-setup-assistant/)**
 
 <div align="center">
-  <img src="src/assets/icon.png" alt="macOS Setup Brew Assistant" width="120" height="120">
-  <h3>macOS Setup Brew Assistant</h3>
+  <img src="src/assets/ciderbrew.png" alt="Ciderbrew" width="120" height="120">
+  <h3>Ciderbrew</h3>
   <p>Tu asistente inteligente para configurar macOS con las mejores aplicaciones</p>
 </div>
 

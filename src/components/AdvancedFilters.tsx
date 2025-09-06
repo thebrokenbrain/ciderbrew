@@ -24,7 +24,7 @@ export function AdvancedFilters({ filters, onFiltersChange }: AdvancedFiltersPro
               ...filters, 
               installType: e.target.value === 'all' ? [] : [e.target.value]
             })}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="all">Todos</option>
             <option value="brew-cask">Cask</option>
@@ -45,7 +45,7 @@ export function AdvancedFilters({ filters, onFiltersChange }: AdvancedFiltersPro
               ...filters, 
               architecture: e.target.value === 'all' ? [] : [e.target.value as 'arm64' | 'intel']
             })}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="all">Todas</option>
             <option value="arm64">ARM64 (Apple Silicon)</option>
@@ -83,7 +83,7 @@ export function AdvancedFilters({ filters, onFiltersChange }: AdvancedFiltersPro
               sortOrder: 'asc',
               showOnlySelected: false
             })}
-            className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+            className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
           >
             Limpiar filtros
           </button>

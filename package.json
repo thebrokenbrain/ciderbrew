@@ -3,7 +3,7 @@
   "private": false,
   "version": "1.0.0",
   "type": "module",
-  "description": "🍎 Modern macOS Setup Assistant - Generate custom installation scripts with React + TypeScript",
+  "description": "� Ciderbrew - Generate custom macOS installation scripts with React + TypeScript",
   "homepage": "https://thebrokenbrain.github.io/macos-setup-assistant/",
   "repository": {
     "type": "git",

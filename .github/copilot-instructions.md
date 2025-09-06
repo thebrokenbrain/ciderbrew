@@ -1,4 +1,4 @@
-# macOS Setup Assistant - React TypeScript
+# Ciderbrew - React TypeScript
 
 Este proyecto ha sido migrado exitosamente a React con TypeScript y Tailwind CSS.
 

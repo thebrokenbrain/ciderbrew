@@ -6,6 +6,7 @@ import { ScriptSection } from './components/ScriptSection';
 import { ToastContainer } from './components/ToastContainer';
 import { ProfileManager } from './components/ProfileManager';
 import SelectedAppsModal from './components/SelectedAppsModal';
+import InstructionsModal from './components/InstructionsModal';
 import useAppSelection from './hooks/useAppSelection';
 import { useTheme } from './hooks/useTheme';
 
@@ -34,6 +35,7 @@ function App() {
   const [showScriptSection, setShowScriptSection] = useState(false);
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showSelectedApps, setShowSelectedApps] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const handleAppSelect = (app: SearchableApp, isSelected: boolean) => {
     console.log('📱 App - Recibiendo selección:', app.name, 'isSelected:', isSelected);
@@ -72,6 +74,10 @@ function App() {
     if (count > 0) {
       setShowSelectedApps(true);
     }
+  };
+
+  const handleShowInstructions = () => {
+    setShowInstructions(true);
   };
 
   const handleRemoveSelectedApp = (appId: string) => {
@@ -175,20 +181,21 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white transition-all duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-800 dark:to-gray-700 text-gray-900 dark:text-white transition-all duration-300">
       <div className="min-h-screen">
         {/* Header */}
         <Header 
           selectedCount={count}
           currentProfile={currentProfile}
           onShowSelectedApps={handleShowSelectedApps}
+          onShowInstructions={handleShowInstructions}
         />
         
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Stats and Actions */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-600 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-500 overflow-hidden transition-colors duration-200">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-500">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 {/* Selection Info */}
                 <div className="flex items-center space-x-4">
@@ -212,9 +219,15 @@ function App() {
                   {count > 0 && (
                     <button
                       onClick={clearSelection}
-                      className="text-xs text-red-600 hover:text-red-700 underline"
+                      className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium 
+                                bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 
+                                text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 
+                                border border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700
+                                transition-all duration-200"
+                      title="Limpiar todas las selecciones"
                     >
-                      Limpiar selección
+                      <i className="fas fa-broom text-xs"></i>
+                      <span>Limpiar selección</span>
                     </button>
                   )}
                 </div>
@@ -315,6 +328,12 @@ function App() {
           isOpen={showSelectedApps}
           onClose={() => setShowSelectedApps(false)}
           onRemoveApp={handleRemoveSelectedApp}
+        />
+
+        {/* Instructions Modal */}
+        <InstructionsModal
+          isOpen={showInstructions}
+          onClose={() => setShowInstructions(false)}
         />
 
         {/* Toast Container */}

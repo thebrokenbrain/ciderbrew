@@ -2,7 +2,16 @@ import type { SearchableApp, ScriptGenerationOptions } from '../types/api';
 
 export class ScriptGenerator {
   private static getInstallCommand(app: SearchableApp): string {
-    return app.command;
+    switch (app.installType) {
+      case 'brew':
+        return `brew install ${app.command}`;
+      case 'brew-cask':
+        return `brew install --cask ${app.command}`;
+      case 'custom':
+        return app.command;
+      default:
+        return app.command;
+    }
   }
 
   private static generateHeader(options: ScriptGenerationOptions): string {
@@ -10,8 +19,8 @@ export class ScriptGenerator {
     
     return `#!/bin/bash
 
-# macOS Setup Script
-# Generado por macOS Setup Assistant
+# Ciderbrew Installation Script
+# Generado por Ciderbrew
 # Fecha: ${date}
 ${options.customHeader ? `# ${options.customHeader}` : ''}
 
@@ -300,12 +309,12 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
     const customApps = selectedApps.filter(app => app.installType === 'custom');
 
-    let commands = '# Comandos de instalación\n\n';
+    let commands = '# Comandos de instalación de Ciderbrew\n\n';
     
     if (brewApps.length > 0) {
       commands += '# Herramientas de línea de comandos\n';
       brewApps.forEach(app => {
-        commands += `${app.command}  # ${app.name}\n`;
+        commands += `brew install ${app.command}  # ${app.name}\n`;
       });
       commands += '\n';
     }
@@ -313,7 +322,7 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     if (caskApps.length > 0) {
       commands += '# Aplicaciones\n';
       caskApps.forEach(app => {
-        commands += `${app.command}  # ${app.name}\n`;
+        commands += `brew install --cask ${app.command}  # ${app.name}\n`;
       });
       commands += '\n';
     }
@@ -340,14 +349,19 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     const caskApps = selectedApps.filter(app => app.installType === 'brew-cask');
     const customApps = selectedApps.filter(app => app.installType === 'custom');
 
-    let brewfile = '# Brewfile generado por macOS Setup Assistant\n\n';
+    const date = new Date().toLocaleDateString('es-ES');
+    let brewfile = `# Brewfile generado por Ciderbrew 🍏
+# Fecha: ${date}
+# Para usar este archivo:
+# 1. Guarda este archivo como 'Brewfile' (sin extensión)
+# 2. Ejecuta: brew bundle --file=Brewfile
+
+`;
 
     if (brewApps.length > 0) {
       brewfile += '# Herramientas de línea de comandos\n';
       brewApps.forEach(app => {
-        // Extract package name from command
-        const packageName = app.command.replace('brew install ', '');
-        brewfile += `brew "${packageName}"  # ${app.name}\n`;
+        brewfile += `brew "${app.command}"  # ${app.name}\n`;
       });
       brewfile += '\n';
     }
@@ -355,9 +369,7 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     if (caskApps.length > 0) {
       brewfile += '# Aplicaciones\n';
       caskApps.forEach(app => {
-        // Extract package name from command
-        const packageName = app.command.replace('brew install --cask ', '');
-        brewfile += `cask "${packageName}"  # ${app.name}\n`;
+        brewfile += `cask "${app.command}"  # ${app.name}\n`;
       });
       brewfile += '\n';
     }
@@ -370,7 +382,11 @@ echo "✨ ¡Disfruta tu macOS configurado!"
       brewfile += '\n';
     }
 
-    brewfile += '# Para instalar: brew bundle --file=Brewfile\n';
+    brewfile += `# Instalación:
+# brew bundle --file=ciderbrew_brewfile_*.txt
+# O renombra el archivo a 'Brewfile' y ejecuta: brew bundle
+`;
+    
     if (customApps.length > 0) {
       brewfile += '# Nota: Las aplicaciones personalizadas deben instalarse manualmente\n';
     }

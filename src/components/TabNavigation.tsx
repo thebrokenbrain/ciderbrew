@@ -42,7 +42,7 @@ export const TabNavigation = ({
   };
 
   return (
-    <div className="bg-secondary-50 dark:bg-secondary-800 border-b border-secondary-200 dark:border-secondary-700 transition-colors duration-200">
+    <div className="bg-secondary-50 dark:bg-secondary-900 border-b border-secondary-200 dark:border-secondary-700 transition-colors duration-200">
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         {/* Top Row: Counter and Action Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-4">
@@ -150,7 +150,7 @@ export const TabNavigation = ({
                 min-w-[80px] sm:min-w-[120px] text-xs sm:text-sm font-medium
                 ${activeCategory === key 
                   ? 'bg-primary-500 text-white shadow-lg' 
-                  : 'text-secondary-600 dark:text-secondary-400 hover:bg-secondary-100 dark:hover:bg-secondary-700 hover:text-secondary-800 dark:hover:text-secondary-200'
+                  : 'text-secondary-600 dark:text-secondary-400 hover:bg-secondary-100 dark:hover:bg-secondary-800 hover:text-secondary-800 dark:hover:text-secondary-200'
                 }
               `}
             >

@@ -189,7 +189,7 @@ describe('Adaptive Visual Regression Tests', () => {
       render(<App />);
       
       // Should have app title or branding - use more specific search to avoid multiple matches
-      const title = screen.getByRole('heading', { name: /macOS Setup Brew Assistant/i });
+      const title = screen.getByRole('heading', { name: /Ciderbrew/i });
       
       expect(title).toBeInTheDocument();
     });

@@ -110,7 +110,7 @@ const AppCard: React.FC<AppCardProps> = ({ app, onSelect, className = "" }) => {
     
     return app.isSelected 
       ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 shadow-md' 
-      : 'border-primary-100 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600';
+      : 'border-primary-100 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600';
   };
 
   return (

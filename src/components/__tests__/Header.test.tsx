@@ -5,7 +5,7 @@ describe('Header Component', () => {
   it('should render title and description', () => {
     render(<Header selectedCount={0} />);
     
-    expect(screen.getByText('macOS Setup Brew Assistant')).toBeInTheDocument();
+    expect(screen.getByText('Ciderbrew 🍏')).toBeInTheDocument();
     expect(screen.getByText('Tu asistente inteligente para configurar macOS con Homebrew')).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('Header Component', () => {
 
   it('should contain app icon', () => {
     const { container } = render(<Header selectedCount={0} />);
-    const appIcon = container.querySelector('img[alt="macOS Setup Assistant"]');
+    const appIcon = container.querySelector('img[alt="Ciderbrew"]');
     expect(appIcon).toBeInTheDocument();
   });
 });
