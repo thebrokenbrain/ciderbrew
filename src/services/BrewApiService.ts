@@ -6,36 +6,36 @@ class BrewApiService {
   // Curated list of popular packages for faster search
   private static readonly POPULAR_PACKAGES: Record<string, SearchableApp> = {
     // Development Tools
-    'git': {
-      id: 'formula-git',
-      name: 'git',
-      description: 'Distributed revision control system',
+        'git': {
+      id: 'git',
+      name: 'Git',
+      description: 'Version control system',
       homepage: 'https://git-scm.com',
       version: 'latest',
       installType: 'brew',
-      command: 'brew install git',
+      command: 'git',
       category: 'Development',
       source: 'homebrew'
     },
     'node': {
-      id: 'formula-node',
-      name: 'node',
-      description: 'Platform built on V8 to build network applications',
+      id: 'node',
+      name: 'Node.js',
+      description: 'JavaScript runtime built on Chrome V8 JavaScript engine',
       homepage: 'https://nodejs.org',
       version: 'latest',
       installType: 'brew',
-      command: 'brew install node',
+      command: 'node',
       category: 'Development',
       source: 'homebrew'
     },
     'python': {
-      id: 'formula-python',
-      name: 'python',
+      id: 'python',
+      name: 'Python',
       description: 'Interpreted, interactive, object-oriented programming language',
       homepage: 'https://www.python.org',
       version: 'latest',
       installType: 'brew',
-      command: 'brew install python',
+      command: 'python',
       category: 'Development',
       source: 'homebrew'
     },
@@ -46,7 +46,7 @@ class BrewApiService {
       homepage: 'https://www.docker.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask docker',
+      command: 'docker',
       category: 'Development',
       source: 'homebrew'
     },
@@ -57,7 +57,7 @@ class BrewApiService {
       homepage: 'https://code.visualstudio.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask visual-studio-code',
+      command: 'visual-studio-code',
       category: 'Development',
       source: 'homebrew'
     },
@@ -68,7 +68,7 @@ class BrewApiService {
       homepage: 'https://code.visualstudio.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask visual-studio-code',
+      command: 'visual-studio-code',
       category: 'Development',
       source: 'homebrew'
     },
@@ -81,7 +81,7 @@ class BrewApiService {
       homepage: 'https://www.google.com/chrome',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask google-chrome',
+      command: 'google-chrome',
       category: 'Browsers',
       source: 'homebrew'
     },
@@ -92,7 +92,7 @@ class BrewApiService {
       homepage: 'https://www.mozilla.org/firefox',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask firefox',
+      command: 'firefox',
       category: 'Browsers',
       source: 'homebrew'
     },
@@ -105,7 +105,7 @@ class BrewApiService {
       homepage: 'https://slack.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask slack',
+      command: 'slack',
       category: 'Communication',
       source: 'homebrew'
     },
@@ -116,7 +116,7 @@ class BrewApiService {
       homepage: 'https://discord.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask discord',
+      command: 'discord',
       category: 'Communication',
       source: 'homebrew'
     },
@@ -127,7 +127,7 @@ class BrewApiService {
       homepage: 'https://telegram.org',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask telegram',
+      command: 'telegram',
       category: 'Communication',
       source: 'homebrew'
     },
@@ -138,7 +138,7 @@ class BrewApiService {
       homepage: 'https://zoom.us',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask zoom',
+      command: 'zoom',
       category: 'Communication',
       source: 'homebrew'
     },
@@ -151,7 +151,7 @@ class BrewApiService {
       homepage: 'https://spotify.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask spotify',
+      command: 'spotify',
       category: 'Media',
       source: 'homebrew'
     },
@@ -162,7 +162,7 @@ class BrewApiService {
       homepage: 'https://www.videolan.org/vlc',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask vlc',
+      command: 'vlc',
       category: 'Media',
       source: 'homebrew'
     },
@@ -175,7 +175,7 @@ class BrewApiService {
       homepage: 'https://figma.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask figma',
+      command: 'figma',
       category: 'Design',
       source: 'homebrew'
     },
@@ -188,7 +188,7 @@ class BrewApiService {
       homepage: 'https://postman.com',
       version: 'latest',
       installType: 'brew-cask',
-      command: 'brew install --cask postman',
+      command: 'postman',
       category: 'Development',
       source: 'homebrew'
     }
