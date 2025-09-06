@@ -33,7 +33,7 @@ describe('File Integrity Tests', () => {
     test('Essential hooks should be importable', async () => {
       const useAppSelection = await import('../hooks/useAppSelection');
       expect(useAppSelection).toBeDefined();
-      expect(typeof useAppSelection).toBe('function');
+      expect(typeof useAppSelection.default).toBe('function');
     });
 
     test('Essential components should be importable', async () => {
@@ -86,7 +86,7 @@ describe('File Integrity Tests', () => {
       const useTheme = await import('../hooks/useTheme');
       
       // Hook functions should start with 'use'
-      expect(Object.keys(useAppSelection)).toContain('useAppSelection');
+      expect(Object.keys(useAppSelection)).toContain('default');
       expect(Object.keys(useTheme)).toContain('useTheme');
     });
   });
