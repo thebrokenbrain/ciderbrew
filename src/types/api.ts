@@ -126,6 +126,7 @@ export interface ScriptGenerationOptions {
 
 export interface Toast {
   id: string;
+  title?: string;
   message: string;
   type: 'success' | 'error' | 'warning' | 'info';
   timeout?: number;
