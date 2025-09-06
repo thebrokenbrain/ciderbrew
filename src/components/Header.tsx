@@ -4,7 +4,7 @@
 
 import ThemeToggle from './ThemeToggle';
 import type { AppProfile } from '../services/StorageService';
-import iconPng from '../assets/icon.png';
+import iconPng from '../assets/ciderbrew.png';
 
 interface HeaderProps {
   selectedCount?: number;
@@ -19,21 +19,33 @@ export const Header = ({ selectedCount = 0, currentProfile, onShowSelectedApps }
     <header className="bg-white dark:bg-secondary-900 border-b border-secondary-200 dark:border-secondary-700 px-6 py-4 transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+          <div className="flex items-center space-x-6">
+            <div className="w-32 h-32 flex items-center justify-center">
               <img 
                 src={iconPng} 
                 alt="macOS Setup Assistant" 
-                className="w-8 h-8 object-contain"
+                className="w-32 h-32 object-contain"
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                macOS Setup Brew Assistant
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 via-green-500 to-yellow-500 bg-clip-text text-transparent">
+                Instala macOS a tu manera...
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Tu asistente inteligente para configurar macOS con Homebrew
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                Selecciona programas, genera un script .sh y automatiza la instalación con Homebrew
               </p>
+              <div className="flex items-center space-x-4">
+                <span className="text-xs text-gray-500 dark:text-gray-500">
+                  Made with pure vibe coding ❤️
+                </span>
+                <a 
+                  href="#" 
+                  className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                >
+                  <i className="fab fa-github mr-1"></i>
+                  Ver en GitHub
+                </a>
+              </div>
             </div>
           </div>
           
