@@ -190,7 +190,7 @@ export class HybridSearchService {
       homepage: formula.homepage || '',
       version: formula.versions?.stable || 'latest',
       installType: 'brew',
-      command: `brew install ${formula.name}`,
+      command: formula.name,
       category: this.guessCategory(formula.name, formula.desc || ''),
       source: 'homebrew',
       deprecated: formula.deprecated || false
@@ -221,7 +221,7 @@ export class HybridSearchService {
       homepage: cask.homepage || '',
       version: cask.version || 'latest',
       installType: 'brew-cask',
-      command: `brew install --cask ${cask.token}`,
+      command: cask.token,
       category: this.guessCategory(name || cask.token, cask.desc || ''),
       source: 'homebrew',
       deprecated: cask.deprecated || false
