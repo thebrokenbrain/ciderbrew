@@ -2,6 +2,12 @@ import type { SearchableApp, ScriptGenerationOptions } from '../types/api';
 
 export class ScriptGenerator {
   private static getInstallCommand(app: SearchableApp): string {
+    // Si el comando ya incluye 'brew install', devolverlo tal como está
+    if (app.command.startsWith('brew install')) {
+      return app.command;
+    }
+    
+    // De lo contrario, construir el comando según el tipo de instalación
     switch (app.installType) {
       case 'brew':
         return `brew install ${app.command}`;
@@ -314,7 +320,8 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     if (brewApps.length > 0) {
       commands += '# Herramientas de línea de comandos\n';
       brewApps.forEach(app => {
-        commands += `brew install ${app.command}  # ${app.name}\n`;
+        const command = app.command.startsWith('brew install') ? app.command : `brew install ${app.command}`;
+        commands += `${command}  # ${app.name}\n`;
       });
       commands += '\n';
     }
@@ -322,7 +329,8 @@ echo "✨ ¡Disfruta tu macOS configurado!"
     if (caskApps.length > 0) {
       commands += '# Aplicaciones\n';
       caskApps.forEach(app => {
-        commands += `brew install --cask ${app.command}  # ${app.name}\n`;
+        const command = app.command.startsWith('brew install') ? app.command : `brew install --cask ${app.command}`;
+        commands += `${command}  # ${app.name}\n`;
       });
       commands += '\n';
     }
